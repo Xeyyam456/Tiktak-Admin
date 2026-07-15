@@ -1,0 +1,185 @@
+import { useMemo, useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
+import { Plus } from 'lucide-react'
+import { categories as initialCategories } from '@/lib/mockData'
+import Modal from '@/shared/Modal/Modal'
+import ConfirmModal from '@/shared/ConfirmModal/ConfirmModal'
+import Button from '@/shared/Button/Button'
+import ActionMenu from '@/shared/ActionMenu/ActionMenu'
+import { Table, TableEmptyRow } from '@/shared/Table/Table'
+import Pagination from '@/utils/Pagination/Pagination'
+import { useTitle } from '@/shared/hooks/useTitle'
+import styles from './Categories.module.css'
+
+const emptyForm = { image: '🏷️', color: '#f3f4f6', imageUrl: '', name: '', description: '' }
+
+const columns = [
+  { key: 'no', label: 'Sıra', width: 40 },
+  { key: 'image', label: 'Şəkil', width: 72 },
+  { key: 'name', label: 'Ad', width: 160 },
+  { key: 'desc', label: 'Açıqlama' },
+  { key: 'date', label: 'Tarix', width: 110 },
+  { key: 'action', label: 'Əməliyyatlar', width: 100 },
+]
+
+export default function Categories() {
+  useTitle('Kateqoriyalar')
+  const { search } = useOutletContext()
+  const [categories, setCategories] = useState(initialCategories)
+  const [page, setPage] = useState(1)
+  const pageSize = 5
+
+  const [formOpen, setFormOpen] = useState(false)
+  const [editing, setEditing] = useState(null)
+  const [form, setForm] = useState(emptyForm)
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [viewTarget, setViewTarget] = useState(null)
+
+  const filtered = useMemo(
+    () =>
+      categories.filter((c) =>
+        `${c.name} ${c.description}`.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [categories, search],
+  )
+  const paged = filtered.slice((page - 1) * pageSize, page * pageSize)
+
+  const openCreate = () => {
+    setEditing(null)
+    setForm(emptyForm)
+    setFormOpen(true)
+  }
+
+  const openEdit = (item) => {
+    setEditing(item)
+    setForm({
+      image: item.image,
+      color: item.color,
+      imageUrl: item.imageUrl || '',
+      name: item.name,
+      description: item.description,
+    })
+    setFormOpen(true)
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (editing) {
+      setCategories((prev) => prev.map((c) => (c.id === editing.id ? { ...c, ...form } : c)))
+    } else {
+      const today = new Date()
+      const date = `${String(today.getDate()).padStart(2, '0')}.${String(today.getMonth() + 1).padStart(2, '0')}.${today.getFullYear()}`
+      setCategories((prev) => [{ id: Date.now(), ...form, image: form.image || '🏷️', date }, ...prev])
+    }
+    setFormOpen(false)
+  }
+
+  const confirmDelete = () => {
+    setCategories((prev) => prev.filter((c) => c.id !== deleteTarget.id))
+    setDeleteTarget(null)
+  }
+
+  return (
+    <div>
+      <div className={styles.headerRow}>
+        <h2 className={styles.heading}>Kateqoriyalar</h2>
+        <Button icon={Plus} onClick={openCreate}>
+          Yeni Kateqoriya
+        </Button>
+      </div>
+
+      <Table columns={columns} minWidth={720}>
+        {paged.map((item, idx) => (
+          <tr key={item.id}>
+            <td>{(page - 1) * pageSize + idx + 1}</td>
+            <td>
+              <span className={styles.thumb} style={{ backgroundColor: item.color }}>
+                {item.imageUrl ? <img src={item.imageUrl} alt="" className={styles.thumbImg} /> : item.image}
+              </span>
+            </td>
+            <td className={styles.nameCell}>{item.name}</td>
+            <td className={styles.descCell}>{item.description}</td>
+            <td>{item.date}</td>
+            <td>
+              <ActionMenu
+                onView={() => setViewTarget(item)}
+                onEdit={() => openEdit(item)}
+                onDelete={() => setDeleteTarget(item)}
+              />
+            </td>
+          </tr>
+        ))}
+        {paged.length === 0 && <TableEmptyRow colSpan={columns.length} />}
+      </Table>
+
+      <Pagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} />
+
+      <Modal open={formOpen} onClose={() => setFormOpen(false)}>
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <label className={styles.field}>
+            Şəkil ünvanı
+            <input
+              type="text"
+              value={form.imageUrl}
+              onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
+              placeholder="https://..."
+              className={styles.input}
+            />
+          </label>
+          <label className={styles.field}>
+            Ad
+            <input
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              required
+              className={styles.input}
+            />
+          </label>
+          <label className={styles.field}>
+            Açıqlama
+            <textarea
+              value={form.description}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              rows={3}
+              required
+              className={styles.textarea}
+            />
+          </label>
+          <Button type="submit" fullWidth className={styles.submitBtn}>
+            {editing ? 'Məlumatları yenilə' : 'Məlumatları yarat'}
+          </Button>
+        </form>
+      </Modal>
+
+      <ConfirmModal
+        open={!!deleteTarget}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        message="Məlumatı silməyə əminsinizmi?"
+      />
+
+      <Modal open={!!viewTarget} onClose={() => setViewTarget(null)} title="Kateqoriya məlumatları" wide>
+        {viewTarget && (
+          <div>
+            <div className={styles.detailTop}>
+              <span className={styles.detailThumb} style={{ backgroundColor: viewTarget.color }}>
+                {viewTarget.imageUrl ? (
+                  <img src={viewTarget.imageUrl} alt="" className={styles.detailThumbImg} />
+                ) : (
+                  viewTarget.image
+                )}
+              </span>
+              <div className={styles.detailName}>{viewTarget.name}</div>
+            </div>
+            <dl className={styles.detailGrid}>
+              <dt>Açıqlama:</dt>
+              <dd>{viewTarget.description}</dd>
+              <dt>Tarix:</dt>
+              <dd>{viewTarget.date}</dd>
+            </dl>
+          </div>
+        )}
+      </Modal>
+    </div>
+  )
+}

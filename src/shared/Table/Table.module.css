@@ -1,0 +1,45 @@
+.scroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table thead tr {
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  font-size: 12px;
+  color: var(--color-text-faint);
+}
+
+.table th {
+  padding: 12px 8px 12px 0;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table tbody tr {
+  height: var(--table-row-height);
+  border-bottom: 1px solid #fafafa;
+  color: var(--color-text-muted);
+}
+
+.table td {
+  padding: 12px 8px 12px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.emptyRow td {
+  padding: 32px 0;
+  text-align: center;
+  color: var(--color-text-faint);
+}

@@ -1,0 +1,21 @@
+import { Search } from 'lucide-react'
+import styles from './Header.module.css'
+
+export default function Header({ search, onSearchChange }) {
+  return (
+    <header className={styles.header}>
+      <h1 className={styles.title}>TIK TAK ADMIN</h1>
+      <div className={styles.searchWrap}>
+        <Search className={styles.searchIcon} size={16} />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => onSearchChange?.(e.target.value)}
+          placeholder="Axtarış"
+          className={styles.searchInput}
+        />
+      </div>
+      <div className={styles.spacer} />
+    </header>
+  )
+}
