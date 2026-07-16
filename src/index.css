@@ -1,7 +1,13 @@
-@import "@fontsource/roboto/300.css";
-@import "@fontsource/roboto/400.css";
-@import "@fontsource/roboto/500.css";
-@import "@fontsource/roboto/700.css";
+/* Azerbaijani only needs latin + latin-ext (ə/ğ/ı/ö/ş/ü/ç) — not the full
+   cyrillic/greek/vietnamese/symbols/math subsets fontsource ships by default */
+@import "@fontsource/roboto/latin-300.css";
+@import "@fontsource/roboto/latin-ext-300.css";
+@import "@fontsource/roboto/latin-400.css";
+@import "@fontsource/roboto/latin-ext-400.css";
+@import "@fontsource/roboto/latin-500.css";
+@import "@fontsource/roboto/latin-ext-500.css";
+@import "@fontsource/roboto/latin-700.css";
+@import "@fontsource/roboto/latin-ext-700.css";
 
 * {
   box-sizing: border-box;

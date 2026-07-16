@@ -1,0 +1,60 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 16px;
+  padding: 32px 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--color-text-muted);
+  animation: fadeIn 0.25s ease;
+}
+
+.fullScreen {
+  min-height: 70vh;
+  margin-bottom: 0;
+}
+
+.spinner {
+  height: 96px;
+  width: 96px;
+  border-radius: 999px;
+  border: 8px solid transparent;
+  border-top-color: var(--color-green);
+  border-right-color: var(--color-blue-text);
+  border-bottom-color: var(--color-amber-text);
+  border-left-color: var(--color-purple-text);
+  animation:
+    spin 1.1s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite,
+    pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

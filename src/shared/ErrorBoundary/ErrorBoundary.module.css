@@ -1,0 +1,36 @@
+.page {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  background: var(--color-white);
+}
+
+.badge {
+  display: flex;
+  height: 72px;
+  width: 72px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  background: var(--color-red-bg);
+  color: var(--color-red-text);
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-strong);
+}
+
+.text {
+  max-width: 360px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}

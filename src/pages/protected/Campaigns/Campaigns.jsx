@@ -1,17 +1,32 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useOutletContext } from 'react-router-dom'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
-import { campaigns as initialCampaigns } from '@/lib/mockData'
+import { toast } from 'sonner'
+import { listCampaigns, createCampaign, updateCampaign, deleteCampaign } from '@/services/campaignService'
+import { mapCampaignFromApi, mapCampaignToApi } from '@/lib/adapters/campaign'
 import Modal from '@/shared/Modal/Modal'
 import ConfirmModal from '@/shared/ConfirmModal/ConfirmModal'
 import Button from '@/shared/Button/Button'
 import ActionMenu from '@/shared/ActionMenu/ActionMenu'
 import { Table, TableEmptyRow } from '@/shared/Table/Table'
 import Pagination from '@/utils/Pagination/Pagination'
+import Loading from '@/shared/Loading/Loading'
+import Thumbnail from '@/shared/Thumbnail/Thumbnail'
+import { usePagination } from '@/shared/hooks/usePagination'
+import { useCrudModal } from '@/shared/hooks/useCrudModal'
 import { useTitle } from '@/shared/hooks/useTitle'
 import styles from './Campaigns.module.css'
 
 const emptyForm = { image: '🖼️', color: '#f3f4f6', imageUrl: '', title: '', description: '' }
+
+const toForm = (item) => ({
+  image: item.image,
+  color: item.color,
+  imageUrl: item.imageUrl || '',
+  title: item.title,
+  description: item.description,
+})
 
 const columns = [
   { key: 'no', label: 'Sıra', width: 40 },
@@ -25,15 +40,35 @@ const columns = [
 export default function Campaigns() {
   useTitle('Kampaniyalar')
   const { search } = useOutletContext()
-  const [campaigns, setCampaigns] = useState(initialCampaigns)
-  const [page, setPage] = useState(1)
-  const pageSize = 5
+  const queryClient = useQueryClient()
 
-  const [formOpen, setFormOpen] = useState(false)
-  const [editing, setEditing] = useState(null)
-  const [form, setForm] = useState(emptyForm)
-  const [deleteTarget, setDeleteTarget] = useState(null)
-  const [viewTarget, setViewTarget] = useState(null)
+  const { data: campaigns = [], isLoading: loading } = useQuery({
+    queryKey: ['campaigns'],
+    queryFn: () => listCampaigns().then((data) => data.map(mapCampaignFromApi)),
+  })
+
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['campaigns'] })
+  const createMutation = useMutation({
+    mutationFn: createCampaign,
+    onSuccess: async () => {
+      await invalidate()
+      toast.success('Kampaniya yaradıldı')
+    },
+  })
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }) => updateCampaign(id, payload),
+    onSuccess: async () => {
+      await invalidate()
+      toast.success('Kampaniya yeniləndi')
+    },
+  })
+  const deleteMutation = useMutation({
+    mutationFn: deleteCampaign,
+    onSuccess: async () => {
+      await invalidate()
+      toast.success('Kampaniya silindi')
+    },
+  })
 
   const filtered = useMemo(
     () =>
@@ -42,60 +77,66 @@ export default function Campaigns() {
       ),
     [campaigns, search],
   )
-  const paged = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const { page, setPage, pageSize, paged } = usePagination(filtered)
 
-  const openCreate = () => {
-    setEditing(null)
-    setForm(emptyForm)
-    setFormOpen(true)
-  }
+  const {
+    formOpen,
+    setFormOpen,
+    editing,
+    form,
+    setForm,
+    deleteTarget,
+    setDeleteTarget,
+    viewTarget,
+    setViewTarget,
+    openCreate,
+    openEdit,
+  } = useCrudModal(emptyForm, toForm)
 
-  const openEdit = (item) => {
-    setEditing(item)
-    setForm({
-      image: item.image,
-      color: item.color,
-      imageUrl: item.imageUrl || '',
-      title: item.title,
-      description: item.description,
-    })
-    setFormOpen(true)
-  }
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (editing) {
-      setCampaigns((prev) => prev.map((c) => (c.id === editing.id ? { ...c, ...form } : c)))
-    } else {
-      const today = new Date()
-      const date = `${String(today.getDate()).padStart(2, '0')}.${String(today.getMonth() + 1).padStart(2, '0')}.${today.getFullYear()}`
-      setCampaigns((prev) => [{ id: Date.now(), ...form, image: form.image || '🖼️', date }, ...prev])
+    try {
+      const payload = mapCampaignToApi(form)
+      if (editing) {
+        await updateMutation.mutateAsync({ id: editing.id, payload })
+      } else {
+        await createMutation.mutateAsync(payload)
+      }
+      setFormOpen(false)
+    } catch {
+      // error already toasted by the global mutation cache
     }
-    setFormOpen(false)
   }
 
-  const confirmDelete = () => {
-    setCampaigns((prev) => prev.filter((c) => c.id !== deleteTarget.id))
-    setDeleteTarget(null)
+  const confirmDelete = async () => {
+    try {
+      await deleteMutation.mutateAsync(deleteTarget.id)
+    } catch {
+      // error already toasted by the global mutation cache
+    } finally {
+      setDeleteTarget(null)
+    }
   }
+
+  const submitting = createMutation.isPending || updateMutation.isPending
 
   return (
     <div>
       <div className={styles.headerRow}>
         <h2 className={styles.heading}>Kampaniyalar</h2>
-        <Button icon={Plus} onClick={openCreate}>
+        <Button icon={Plus} onClick={() => openCreate()}>
           Yeni Kampaniya
         </Button>
       </div>
+
+      {loading && <Loading />}
 
       <Table columns={columns} minWidth={720}>
         {paged.map((item, idx) => (
           <tr key={item.id}>
             <td>{(page - 1) * pageSize + idx + 1}</td>
             <td>
-              <span className={styles.thumb} style={{ backgroundColor: item.color }}>
-                {item.imageUrl ? <img src={item.imageUrl} alt="" className={styles.thumbImg} /> : item.image}
-              </span>
+              <Thumbnail imageUrl={item.imageUrl} image={item.image} color={item.color} />
             </td>
             <td className={styles.titleCell}>{item.title}</td>
             <td className={styles.descCell}>{item.description}</td>
@@ -109,7 +150,7 @@ export default function Campaigns() {
             </td>
           </tr>
         ))}
-        {paged.length === 0 && <TableEmptyRow colSpan={columns.length} />}
+        {!loading && paged.length === 0 && <TableEmptyRow colSpan={columns.length} />}
       </Table>
 
       <Pagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} />
@@ -145,8 +186,8 @@ export default function Campaigns() {
               className={styles.textarea}
             />
           </label>
-          <Button type="submit" fullWidth className={styles.submitBtn}>
-            {editing ? 'Məlumatları yenilə' : 'Məlumatları yarat'}
+          <Button type="submit" fullWidth className={styles.submitBtn} disabled={submitting}>
+            {submitting ? 'Göndərilir...' : editing ? 'Məlumatları yenilə' : 'Məlumatları yarat'}
           </Button>
         </form>
       </Modal>
@@ -162,13 +203,7 @@ export default function Campaigns() {
         {viewTarget && (
           <div>
             <div className={styles.detailTop}>
-              <span className={styles.detailThumb} style={{ backgroundColor: viewTarget.color }}>
-                {viewTarget.imageUrl ? (
-                  <img src={viewTarget.imageUrl} alt="" className={styles.detailThumbImg} />
-                ) : (
-                  viewTarget.image
-                )}
-              </span>
+              <Thumbnail imageUrl={viewTarget.imageUrl} image={viewTarget.image} color={viewTarget.color} size="lg" />
               <div className={styles.detailName}>{viewTarget.title}</div>
             </div>
             <dl className={styles.detailGrid}>

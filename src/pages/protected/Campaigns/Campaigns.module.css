@@ -14,23 +14,6 @@
   color: var(--color-text-strong);
 }
 
-.thumb {
-  display: flex;
-  height: 40px;
-  width: 40px;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: var(--radius-sm);
-  font-size: 20px;
-}
-
-.thumbImg {
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-}
-
 .titleCell {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -53,23 +36,6 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
-}
-
-.detailThumb {
-  display: flex;
-  height: 56px;
-  width: 56px;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: var(--radius-md);
-  font-size: 28px;
-}
-
-.detailThumbImg {
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
 }
 
 .detailName {

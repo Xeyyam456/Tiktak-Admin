@@ -1,22 +1,24 @@
 import { useMemo, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ShoppingCart, DollarSign, Clock, Timer, CheckCircle2, XCircle, Eye } from 'lucide-react'
-import { orders as initialOrders, orderStats } from '@/lib/mockData'
+import { toast } from 'sonner'
+import { listOrders, getOrderStats, updateOrderStatus } from '@/services/orderService'
+import { mapOrderFromApi } from '@/lib/adapters/order'
+import { ORDER_STATUS_LABELS, ORDER_STATUS_BADGE_COLOR, ORDER_STATUS_OPTIONS } from '@/lib/constants/orderStatus'
 import StatCard from '@/shared/StatCard/StatCard'
 import Badge from '@/shared/Badge/Badge'
 import Modal from '@/shared/Modal/Modal'
 import Button from '@/shared/Button/Button'
 import { Table, TableEmptyRow } from '@/shared/Table/Table'
 import Pagination from '@/utils/Pagination/Pagination'
+import Loading from '@/shared/Loading/Loading'
+import Thumbnail from '@/shared/Thumbnail/Thumbnail'
+import { usePagination } from '@/shared/hooks/usePagination'
 import { useTitle } from '@/shared/hooks/useTitle'
 import styles from './Orders.module.css'
 
-const statusBadge = {
-  Gözləyir: 'amber',
-  Təsdiqləndi: 'blue',
-  Çatdırıldı: 'green',
-  'Ləğv edildi': 'red',
-}
+const emptyStats = { TOTAL: 0, DELIVERED: 0, PENDING: 0, PREPARING: 0, CANCELLED: 0, TOTAL_REVENUE: 0 }
 
 const columns = [
   { key: 'no', label: 'No', width: '14%' },
@@ -31,80 +33,94 @@ const columns = [
 export default function Orders() {
   useTitle('Sifarişlər')
   const { search } = useOutletContext()
-  const [orders, setOrders] = useState(initialOrders)
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(5)
-  const [selected, setSelected] = useState(null)
+  const queryClient = useQueryClient()
+
+  const { data: orders = [], isLoading: loading } = useQuery({
+    queryKey: ['orders'],
+    queryFn: () => listOrders().then((data) => data.map(mapOrderFromApi)),
+  })
+  const { data: statsData } = useQuery({
+    queryKey: ['orderStats'],
+    queryFn: getOrderStats,
+  })
+  const stats = { ...emptyStats, ...statsData }
+
+  const statusMutation = useMutation({
+    mutationFn: ({ id, status }) => updateOrderStatus(id, status),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['orders'] }),
+        queryClient.invalidateQueries({ queryKey: ['orderStats'] }),
+      ])
+      toast.success('Sifariş statusu yeniləndi')
+    },
+  })
+
+  const [selectedId, setSelectedId] = useState(null)
+  // always derived from the live `orders` list, so it reflects the latest
+  // status/user data after a mutation refetch rather than a stale snapshot
+  const selected = orders.find((o) => o.id === selectedId) ?? null
 
   const filtered = useMemo(
     () =>
       orders.filter((o) =>
-        `${o.id} ${o.address}`.toLowerCase().includes(search.toLowerCase()),
+        `${o.orderNumber} ${o.address}`.toLowerCase().includes(search.toLowerCase()),
       ),
     [orders, search],
   )
-
-  const paged = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const { page, setPage, pageSize, setPageSize, paged } = usePagination(filtered)
 
   const updateStatus = (id, status) => {
-    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)))
-    setSelected((prev) => (prev && prev.id === id ? { ...prev, status } : prev))
+    statusMutation.mutate({ id, status })
   }
 
   return (
     <div>
       <h2 className={styles.heading}>Sifarişlər</h2>
 
+      {loading && <Loading />}
+
       <div className={styles.stats}>
-        <StatCard label="Ümumi sifarişlər" value={orderStats.total} icon={ShoppingCart} color="#3b82f6" />
-        <StatCard label="Ümumi satış" value={orderStats.totalSales} icon={DollarSign} color="#22c55e" />
-        <StatCard label="Gözləyən" value={orderStats.pending} icon={Clock} color="#f59e0b" />
-        <StatCard label="Hazırlanır" value={orderStats.preparing} icon={Timer} color="#a855f7" />
-        <StatCard label="Çatdırılan" value={orderStats.delivered} icon={CheckCircle2} color="#22c55e" />
-        <StatCard label="Ləğv edilən" value={orderStats.cancelled} icon={XCircle} color="#ef4444" />
+        <StatCard label="Ümumi sifarişlər" value={stats.TOTAL} icon={ShoppingCart} color="#3b82f6" />
+        <StatCard label="Ümumi satış" value={stats.TOTAL_REVENUE} icon={DollarSign} color="#22c55e" />
+        <StatCard label="Gözləyən" value={stats.PENDING} icon={Clock} color="#f59e0b" />
+        <StatCard label="Hazırlanır" value={stats.PREPARING} icon={Timer} color="#a855f7" />
+        <StatCard label="Çatdırılan" value={stats.DELIVERED} icon={CheckCircle2} color="#22c55e" />
+        <StatCard label="Ləğv edilən" value={stats.CANCELLED} icon={XCircle} color="#ef4444" />
       </div>
 
       <Table columns={columns} minWidth={760}>
         {paged.map((order) => (
           <tr key={order.id}>
-            <td>{order.id.slice(0, 10)}...</td>
-            <td>{order.date.slice(5).split('-').reverse().join('-')}</td>
+            <td>{order.orderNumber}</td>
+            <td>{order.date}</td>
             <td>{order.address}</td>
             <td>{order.itemCount}</td>
             <td>
               {order.subtotal} ₼ <span className={styles.subtotalNote}>· {order.freeShipping ? 'Pulsuz' : 'Ödənişli'}</span>
             </td>
             <td>
-              <Badge color={statusBadge[order.status]}>{order.status}</Badge>
+              <Badge color={ORDER_STATUS_BADGE_COLOR[order.status]}>{ORDER_STATUS_LABELS[order.status] ?? order.status}</Badge>
             </td>
             <td>
-              <Button variant="ghost" icon={Eye} iconSize={15} onClick={() => setSelected(order)}>
+              <Button variant="ghost" icon={Eye} iconSize={15} onClick={() => setSelectedId(order.id)}>
                 Göstər
               </Button>
             </td>
           </tr>
         ))}
-        {paged.length === 0 && <TableEmptyRow colSpan={columns.length} />}
+        {!loading && paged.length === 0 && <TableEmptyRow colSpan={columns.length} />}
       </Table>
 
-      <Pagination
-        page={page}
-        pageSize={pageSize}
-        total={filtered.length}
-        onPageChange={setPage}
-        onPageSizeChange={(size) => {
-          setPageSize(size)
-          setPage(1)
-        }}
-      />
+      <Pagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} onPageSizeChange={setPageSize} />
 
-      <Modal open={!!selected} onClose={() => setSelected(null)} wide>
+      <Modal open={!!selected} onClose={() => setSelectedId(null)} wide>
         {selected && (
           <div>
             <div className={styles.detailHeader}>
               <div className={styles.detailId}>
-                <span className={styles.statusDot}>{selected.status === 'Çatdırıldı' ? '✓' : '0'}</span>
-                <span className={styles.orderCode}>{selected.id}</span>
+                <span className={styles.statusDot}>{selected.status === 'DELIVERED' ? '✓' : '0'}</span>
+                <span className={styles.orderCode}>{selected.orderNumber}</span>
               </div>
               <div className={styles.detailActions}>
                 <div>
@@ -114,9 +130,9 @@ export default function Orders() {
                     onChange={(e) => updateStatus(selected.id, e.target.value)}
                     className={styles.statusSelect}
                   >
-                    {Object.keys(statusBadge).map((s) => (
+                    {ORDER_STATUS_OPTIONS.map((s) => (
                       <option key={s} value={s}>
-                        {s}
+                        {ORDER_STATUS_LABELS[s]}
                       </option>
                     ))}
                   </select>
@@ -147,9 +163,7 @@ export default function Orders() {
               {selected.items.map((item, idx) => (
                 <div key={idx} className={styles.productRow}>
                   <div className={styles.productLeft}>
-                    <span className={styles.productImg} style={{ backgroundColor: item.color }}>
-                      {item.image}
-                    </span>
+                    <Thumbnail image={item.image} color={item.color} />
                     <div>
                       <div className={styles.productName}>{item.name}</div>
                       <div className={styles.productMeta}>

@@ -103,7 +103,14 @@
   color: var(--color-text-muted);
 }
 
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .input {
+  width: 100%;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   background: #f9fafb;
@@ -113,13 +120,38 @@
   outline: none;
 }
 
-.input:focus {
-  border-color: var(--color-green);
+.hasLeadingIcon {
+  padding-left: 40px;
 }
 
-.error {
-  font-size: 14px;
-  color: var(--color-red-text);
+.hasTrailingIcon {
+  padding-right: 40px;
+}
+
+.leadingIcon {
+  position: absolute;
+  left: 14px;
+  color: var(--color-text-faint);
+  pointer-events: none;
+}
+
+.trailingIconBtn {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  border: none;
+  background: none;
+  padding: 4px;
+  color: var(--color-text-faint);
+  cursor: pointer;
+}
+
+.trailingIconBtn:hover {
+  color: var(--color-text-muted);
+}
+
+.input:focus {
+  border-color: var(--color-green);
 }
 
 .submitBtn {

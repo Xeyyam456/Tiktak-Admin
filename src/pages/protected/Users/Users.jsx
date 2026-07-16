@@ -1,11 +1,15 @@
 import { useMemo, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { Eye, Phone } from 'lucide-react'
-import { users as initialUsers } from '@/lib/mockData'
+import { listUsers } from '@/services/userService'
+import { mapUserFromApi } from '@/lib/adapters/user'
 import Modal from '@/shared/Modal/Modal'
 import Button from '@/shared/Button/Button'
 import { Table, TableEmptyRow } from '@/shared/Table/Table'
 import Pagination from '@/utils/Pagination/Pagination'
+import Loading from '@/shared/Loading/Loading'
+import { usePagination } from '@/shared/hooks/usePagination'
 import { useTitle } from '@/shared/hooks/useTitle'
 import styles from './Users.module.css'
 
@@ -22,20 +26,23 @@ const columns = [
 export default function Users() {
   useTitle('İstifadəçilər')
   const { search } = useOutletContext()
-  const [users] = useState(initialUsers)
-  const [page, setPage] = useState(1)
+  const { data: users = [], isLoading: loading } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => listUsers().then((data) => data.map(mapUserFromApi)),
+  })
   const [selected, setSelected] = useState(null)
-  const pageSize = 5
 
   const filtered = useMemo(
     () => users.filter((u) => `${u.name} ${u.phone}`.toLowerCase().includes(search.toLowerCase())),
     [users, search],
   )
-  const paged = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const { page, setPage, pageSize, paged } = usePagination(filtered)
 
   return (
     <div>
       <h2 className={styles.heading}>İstifadəçilər</h2>
+
+      {loading && <Loading />}
 
       <Table columns={columns} minWidth={760}>
         {paged.map((user, idx) => (
@@ -63,7 +70,7 @@ export default function Users() {
             </td>
           </tr>
         ))}
-        {paged.length === 0 && <TableEmptyRow colSpan={columns.length} />}
+        {!loading && paged.length === 0 && <TableEmptyRow colSpan={columns.length} />}
       </Table>
 
       <Pagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} />
