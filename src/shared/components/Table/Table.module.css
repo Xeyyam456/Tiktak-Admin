@@ -1,5 +1,13 @@
 .scroll {
-  overflow-x: auto;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
+}
+
+.scroll::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Edge Chromium — scrolling stays functional, just invisible */
 }
 
 .table {
@@ -10,6 +18,10 @@
 }
 
 .table thead tr {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--color-white);
   border-bottom: 1px solid var(--color-border);
   text-align: left;
   font-size: 12px;

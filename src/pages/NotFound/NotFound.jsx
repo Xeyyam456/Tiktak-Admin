@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Compass } from 'lucide-react'
-import Button from '@/shared/Button/Button'
+import Button from '@/shared/components/Button/Button'
 import { useTitle } from '@/shared/hooks/useTitle'
 import styles from './NotFound.module.css'
 

@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import RequireAuth from '@/routes/RequireAuth'
 import RedirectIfAuth from '@/routes/RedirectIfAuth'
 import AdminLayout from '@/layouts/AdminLayout'
-import Loading from '@/shared/Loading/Loading'
+import Loading from '@/shared/components/Loading/Loading'
 
 const Login = lazy(() => import('@/pages/Login/Login'))
 const NotFound = lazy(() => import('@/pages/NotFound/NotFound'))

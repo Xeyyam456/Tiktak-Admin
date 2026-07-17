@@ -29,9 +29,26 @@
 .main {
   min-width: 0;
   flex: 1;
-  min-height: var(--shell-content-height);
+  height: var(--shell-content-height);
   border-radius: var(--radius-lg);
   background: var(--color-white);
   padding: 24px;
   box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Outlet always renders a single page-root <div> here. Fixing `.main` to a
+   constant height (instead of the old min-height floor) means Sidebar, which
+   stretches to match it via `.bodyInner`'s align-items, never grows/shrinks
+   with row count or page size — the page itself must absorb any overflow via
+   internal scrolling instead of pushing this container taller. min-height: 0
+   is required so the flex child can shrink below its content size and let
+   `Table`'s .scroll wrapper (flex: 1 in Table.module.css) take the overflow. */
+.main > * {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
 }

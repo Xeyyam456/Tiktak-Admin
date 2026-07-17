@@ -1,6 +1,6 @@
 import { Component } from 'react'
 import { ServerCrash } from 'lucide-react'
-import Button from '@/shared/Button/Button'
+import Button from '@/shared/components/Button/Button'
 import styles from './ErrorBoundary.module.css'
 
 export default class ErrorBoundary extends Component {

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import Button from '@/shared/Button/Button'
+import Button from '@/shared/components/Button/Button'
 import deleteImg from '@/assets/images/delete-img.svg'
 import styles from './ConfirmModal.module.css'
 
