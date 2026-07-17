@@ -1,8 +1,9 @@
 import { formatDate } from '@/utils/formatDate'
+import type { Campaign, CampaignApi, CampaignForm, CampaignPayload } from '@/types/campaign'
 
 const FALLBACK = { image: '🖼️', color: '#f3f4f6' }
 
-export const mapCampaignFromApi = (c) => ({
+export const mapCampaignFromApi = (c: CampaignApi): Campaign => ({
   id: c.id,
   ...FALLBACK,
   imageUrl: c.img_url || '',
@@ -11,7 +12,7 @@ export const mapCampaignFromApi = (c) => ({
   date: formatDate(c.created_at),
 })
 
-export const mapCampaignToApi = (form) => ({
+export const mapCampaignToApi = (form: CampaignForm): CampaignPayload => ({
   title: form.title,
   description: form.description,
   img_url: form.imageUrl || '',

@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import Sidebar from '@/components/Sidebar/Sidebar'
 import Header from '@/components/Header/Header'
 import { useDebounce } from '@/shared/hooks/useDebounce'
+import type { LayoutOutletContext } from '@/types/common'
 import styles from './AdminLayout.module.css'
 
 export default function AdminLayout() {
@@ -20,7 +21,7 @@ export default function AdminLayout() {
         <div className={styles.bodyInner}>
           <Sidebar />
           <main className={styles.main}>
-            <Outlet context={{ search: debouncedSearch }} />
+            <Outlet context={{ search: debouncedSearch } satisfies LayoutOutletContext} />
           </main>
         </div>
       </div>

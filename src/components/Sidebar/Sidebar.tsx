@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { ClipboardList, Megaphone, Tags, Package, Users, LogOut } from 'lucide-react'
 import { useAuthStore } from '@/store/useAuthStore'
 import { listOrders, getOrderStats } from '@/services/orderService'
@@ -26,7 +26,7 @@ const navItems = [
 // klik olunanda səhifə artıq cache-dən açılır, Loading demək olar görünmür.
 // queryKey/queryFn cütləri həmin səhifənin öz useQuery çağırışı ilə eynilə üst-üstə
 // düşməlidir, yoxsa TanStack Query key-i "dolu" sayıb səhifənin öz sorğusunu buraxar.
-const PREFETCH = {
+const PREFETCH: Record<string, (queryClient: QueryClient) => void> = {
   '/sifarisler': (queryClient) => {
     queryClient.prefetchQuery({ queryKey: ['orders'], queryFn: () => listOrders().then((data) => data.map(mapOrderFromApi)) })
     queryClient.prefetchQuery({ queryKey: ['orderStats'], queryFn: getOrderStats })

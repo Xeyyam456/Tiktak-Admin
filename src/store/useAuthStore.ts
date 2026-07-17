@@ -1,8 +1,16 @@
 import { create } from 'zustand'
 import { loginAdmin } from '@/services/authService'
 import { getAccessToken, getStoredProfile, saveSession, clearSession } from '@/lib/auth/session'
+import type { Profile } from '@/types/auth'
 
-export const useAuthStore = create((set) => ({
+interface AuthState {
+  profile: Profile | null
+  isAuthenticated: boolean
+  login: (phone: string, password: string) => Promise<void>
+  logout: () => void
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
   profile: getStoredProfile(),
   isAuthenticated: !!getAccessToken(),
 

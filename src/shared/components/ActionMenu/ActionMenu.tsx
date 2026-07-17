@@ -3,14 +3,20 @@ import { createPortal } from 'react-dom'
 import { MoreVertical, Eye, Pencil, Trash2 } from 'lucide-react'
 import styles from './ActionMenu.module.css'
 
-export default function ActionMenu({ onView, onEdit, onDelete }) {
+interface ActionMenuProps {
+  onView?: () => void
+  onEdit?: () => void
+  onDelete?: () => void
+}
+
+export default function ActionMenu({ onView, onEdit, onDelete }: ActionMenuProps) {
   const [open, setOpen] = useState(false)
   const [pos, setPos] = useState({ top: 0, left: 0 })
-  const triggerRef = useRef(null)
-  const menuRef = useRef(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   const openMenu = () => {
-    const rect = triggerRef.current.getBoundingClientRect()
+    const rect = triggerRef.current!.getBoundingClientRect()
     const menuWidth = 150
     setPos({
       top: rect.bottom + 4,
@@ -22,8 +28,9 @@ export default function ActionMenu({ onView, onEdit, onDelete }) {
   useEffect(() => {
     if (!open) return undefined
 
-    const handlePointerDown = (e) => {
-      if (triggerRef.current?.contains(e.target) || menuRef.current?.contains(e.target)) return
+    const handlePointerDown = (e: MouseEvent) => {
+      const target = e.target as Node
+      if (triggerRef.current?.contains(target) || menuRef.current?.contains(target)) return
       setOpen(false)
     }
     const handleScroll = () => setOpen(false)
@@ -39,7 +46,7 @@ export default function ActionMenu({ onView, onEdit, onDelete }) {
     }
   }, [open])
 
-  const handleSelect = (fn) => {
+  const handleSelect = (fn?: () => void) => {
     setOpen(false)
     fn?.()
   }

@@ -1,6 +1,8 @@
 import api from './axiosInstance'
+import type { ProductApi, ProductPayload } from '@/types/product'
 
-export const listProducts = () => api.get('/admin/products')
-export const createProduct = (payload) => api.post('/admin/product', payload)
-export const updateProduct = (id, payload) => api.put(`/admin/products/${id}`, payload)
-export const deleteProduct = (id) => api.delete(`/admin/products/${id}`)
+export const listProducts = () => api.get<ProductApi[]>('/admin/products')
+export const createProduct = (payload: ProductPayload) => api.post<ProductApi>('/admin/product', payload)
+export const updateProduct = (id: number, payload: ProductPayload) =>
+  api.put<ProductApi>(`/admin/products/${id}`, payload)
+export const deleteProduct = (id: number) => api.delete<null>(`/admin/products/${id}`)

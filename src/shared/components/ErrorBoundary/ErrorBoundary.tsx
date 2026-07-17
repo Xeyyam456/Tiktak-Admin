@@ -1,20 +1,29 @@
 import { Component } from 'react'
+import type { ErrorInfo, ReactNode } from 'react'
 import { ServerCrash } from 'lucide-react'
 import Button from '@/shared/components/Button/Button'
 import styles from './ErrorBoundary.module.css'
 
-export default class ErrorBoundary extends Component {
-  state = { hasError: false }
+interface ErrorBoundaryProps {
+  children: ReactNode
+}
 
-  static getDerivedStateFromError() {
+interface ErrorBoundaryState {
+  hasError: boolean
+}
+
+export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  override state: ErrorBoundaryState = { hasError: false }
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
     return { hasError: true }
   }
 
-  componentDidCatch(error, info) {
+  override componentDidCatch(error: Error, info: ErrorInfo) {
     console.error(error, info)
   }
 
-  render() {
+  override render() {
     if (!this.state.hasError) return this.props.children
 
     return (

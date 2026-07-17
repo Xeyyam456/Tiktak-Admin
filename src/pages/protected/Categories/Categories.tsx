@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import type { FormEvent } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
@@ -16,11 +17,13 @@ import Thumbnail from '@/shared/components/Thumbnail/Thumbnail'
 import { usePagination } from '@/shared/hooks/usePagination'
 import { useCrudModal } from '@/shared/hooks/useCrudModal'
 import { useTitle } from '@/shared/hooks/useTitle'
+import type { Column, LayoutOutletContext } from '@/types/common'
+import type { Category, CategoryForm, CategoryPayload } from '@/types/category'
 import styles from './Categories.module.css'
 
-const emptyForm = { image: '🏷️', color: '#f3f4f6', imageUrl: '', name: '', description: '' }
+const emptyForm: CategoryForm = { image: '🏷️', color: '#f3f4f6', imageUrl: '', name: '', description: '' }
 
-const toForm = (item) => ({
+const toForm = (item: Category): CategoryForm => ({
   image: item.image,
   color: item.color,
   imageUrl: item.imageUrl || '',
@@ -28,7 +31,7 @@ const toForm = (item) => ({
   description: item.description,
 })
 
-const columns = [
+const columns: Column[] = [
   { key: 'no', label: 'Sıra', width: 40 },
   { key: 'image', label: 'Şəkil', width: 72 },
   { key: 'name', label: 'Ad', width: 160 },
@@ -39,7 +42,7 @@ const columns = [
 
 export default function Categories() {
   useTitle('Kateqoriyalar')
-  const { search } = useOutletContext()
+  const { search } = useOutletContext<LayoutOutletContext>()
   const queryClient = useQueryClient()
 
   const { data: categories = [], isLoading: loading } = useQuery({
@@ -56,7 +59,7 @@ export default function Categories() {
     },
   })
   const updateMutation = useMutation({
-    mutationFn: ({ id, payload }) => updateCategory(id, payload),
+    mutationFn: ({ id, payload }: { id: number; payload: CategoryPayload }) => updateCategory(id, payload),
     onSuccess: async () => {
       await invalidate()
       toast.success('Kateqoriya yeniləndi')
@@ -91,9 +94,9 @@ export default function Categories() {
     setViewTarget,
     openCreate,
     openEdit,
-  } = useCrudModal(emptyForm, toForm)
+  } = useCrudModal<Category, CategoryForm>(emptyForm, toForm)
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const payload = mapCategoryToApi(form)
@@ -109,6 +112,7 @@ export default function Categories() {
   }
 
   const confirmDelete = async () => {
+    if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
     } catch {

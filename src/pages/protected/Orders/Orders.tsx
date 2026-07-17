@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { listOrders, getOrderStats, updateOrderStatus } from '@/services/orderService'
 import { mapOrderFromApi } from '@/lib/adapters/order'
 import { ORDER_STATUS_LABELS, ORDER_STATUS_BADGE_COLOR, ORDER_STATUS_OPTIONS } from '@/lib/constants/orderStatus'
+import type { OrderStatus } from '@/lib/constants/orderStatus'
 import StatCard from '@/shared/components/StatCard/StatCard'
 import Badge from '@/shared/components/Badge/Badge'
 import Modal from '@/shared/components/Modal/Modal'
@@ -16,11 +17,17 @@ import Loading from '@/shared/components/Loading/Loading'
 import Thumbnail from '@/shared/components/Thumbnail/Thumbnail'
 import { usePagination } from '@/shared/hooks/usePagination'
 import { useTitle } from '@/shared/hooks/useTitle'
+import type { Column, LayoutOutletContext } from '@/types/common'
+import type { Order, OrderStats } from '@/types/order'
 import styles from './Orders.module.css'
 
-const emptyStats = { TOTAL: 0, DELIVERED: 0, PENDING: 0, PREPARING: 0, CANCELLED: 0, TOTAL_REVENUE: 0 }
+const emptyStats: OrderStats = { TOTAL: 0, DELIVERED: 0, PENDING: 0, PREPARING: 0, CANCELLED: 0, TOTAL_REVENUE: 0 }
 
-const columns = [
+// TOTAL hər zaman var, digər statuslar sifariş siyahısında rast gəlindikcə əlavə olunur —
+// ona görə TOTAL adi `number`, qalanları isə "ola da bilər, olmaya da" mənasında `Partial`.
+type StatusCounts = { TOTAL: number } & Partial<Record<OrderStatus, number>>
+
+const columns: Column[] = [
   { key: 'no', label: 'No', width: '14%' },
   { key: 'date', label: 'Tarix', width: 90 },
   { key: 'address', label: 'Çatdırılma ünvanı' },
@@ -32,7 +39,7 @@ const columns = [
 
 export default function Orders() {
   useTitle('Sifarişlər')
-  const { search } = useOutletContext()
+  const { search } = useOutletContext<LayoutOutletContext>()
   const queryClient = useQueryClient()
 
   const { data: orders = [], isLoading: loading } = useQuery({
@@ -47,7 +54,7 @@ export default function Orders() {
   // (CANCELLED in particular can come back missing, see docs/API.md §8.2) —
   // `orders` is already the full unpaginated list, so count statuses from it
   // directly instead of trusting the backend summary for per-status counts.
-  const statusCounts = orders.reduce(
+  const statusCounts = orders.reduce<StatusCounts>(
     (acc, o) => {
       acc.TOTAL += 1
       acc[o.status] = (acc[o.status] ?? 0) + 1
@@ -55,14 +62,14 @@ export default function Orders() {
     },
     { TOTAL: 0 },
   )
-  const stats = { ...emptyStats, ...statsData, ...statusCounts }
+  const stats: OrderStats = { ...emptyStats, ...statsData, ...statusCounts }
 
   const statusMutation = useMutation({
-    mutationFn: ({ id, status }) => updateOrderStatus(id, status),
+    mutationFn: ({ id, status }: { id: number; status: OrderStatus }) => updateOrderStatus(id, status),
     onMutate: async ({ id, status }) => {
       await queryClient.cancelQueries({ queryKey: ['orders'] })
-      const previousOrders = queryClient.getQueryData(['orders'])
-      queryClient.setQueryData(['orders'], (old) =>
+      const previousOrders = queryClient.getQueryData<Order[]>(['orders'])
+      queryClient.setQueryData<Order[]>(['orders'], (old) =>
         old?.map((o) => (o.id === id ? { ...o, status } : o)),
       )
       return { previousOrders }
@@ -81,7 +88,7 @@ export default function Orders() {
     },
   })
 
-  const [selectedId, setSelectedId] = useState(null)
+  const [selectedId, setSelectedId] = useState<number | null>(null)
   // always derived from the live `orders` list, so it reflects the latest
   // status/user data after a mutation refetch rather than a stale snapshot
   const selected = orders.find((o) => o.id === selectedId) ?? null
@@ -95,7 +102,7 @@ export default function Orders() {
   )
   const { page, setPage, pageSize, setPageSize, paged } = usePagination(filtered)
 
-  const updateStatus = (id, status) => {
+  const updateStatus = (id: number, status: OrderStatus) => {
     statusMutation.mutate({ id, status })
   }
 
@@ -152,8 +159,9 @@ export default function Orders() {
                   <div className={styles.miniLabel}>Status</div>
                   <select
                     value={selected.status}
-                    onChange={(e) => updateStatus(selected.id, e.target.value)}
+                    onChange={(e) => updateStatus(selected.id, e.target.value as OrderStatus)}
                     className={styles.statusSelect}
+                    style={{ color: ORDER_STATUS_BADGE_COLOR[selected.status] }} //dinamic color based on status
                   >
                     {ORDER_STATUS_OPTIONS.map((s) => (
                       <option key={s} value={s}>

@@ -1,10 +1,10 @@
 import { useState } from 'react'
 
-export function usePagination(items, initialPageSize = 5) {
+export function usePagination<T>(items: T[], initialPageSize = 5) {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSizeState] = useState(initialPageSize)
 
-  const setPageSize = (size) => {
+  const setPageSize = (size: number) => {
     setPageSizeState(size)
     setPage(1)
   }

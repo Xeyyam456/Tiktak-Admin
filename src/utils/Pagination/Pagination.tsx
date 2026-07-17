@@ -1,12 +1,20 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import styles from './Pagination.module.css'
 
-export default function Pagination({ page, pageSize, total, onPageChange, onPageSizeChange }) {
+interface PaginationProps {
+  page: number
+  pageSize: number
+  total: number
+  onPageChange: (page: number) => void
+  onPageSizeChange?: (size: number) => void
+}
+
+export default function Pagination({ page, pageSize, total, onPageChange, onPageSizeChange }: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
   const start = total === 0 ? 0 : (page - 1) * pageSize + 1
   const end = Math.min(total, page * pageSize)
 
-  const pageNumbers = []
+  const pageNumbers: (number | '...')[] = []
   for (let p = 1; p <= totalPages; p += 1) {
     if (p === 1 || p === totalPages || Math.abs(p - page) <= 1) {
       pageNumbers.push(p)

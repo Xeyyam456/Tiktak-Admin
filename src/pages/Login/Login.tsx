@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Phone, Lock, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
@@ -16,7 +17,7 @@ export default function Login() {
   const navigate = useNavigate()
   const login = useAuthStore((s) => s.login)
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!phone.trim() || !password.trim()) {
       toast.error('Telefon və parolu daxil edin')
@@ -27,7 +28,7 @@ export default function Login() {
       await login(phone.trim(), password)
       navigate('/sifarisler', { replace: true })
     } catch (err) {
-      toast.error(err.message)
+      toast.error(err instanceof Error ? err.message : 'Xəta baş verdi')
     } finally {
       setLoading(false)
     }

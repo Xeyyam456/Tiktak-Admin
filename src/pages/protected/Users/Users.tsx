@@ -11,9 +11,11 @@ import Pagination from '@/utils/Pagination/Pagination'
 import Loading from '@/shared/components/Loading/Loading'
 import { usePagination } from '@/shared/hooks/usePagination'
 import { useTitle } from '@/shared/hooks/useTitle'
+import type { Column, LayoutOutletContext } from '@/types/common'
+import type { User } from '@/types/user'
 import styles from './Users.module.css'
 
-const columns = [
+const columns: Column[] = [
   { key: 'no', label: 'Sıra', width: 40 },
   { key: 'avatar', label: 'Avatar', width: 80 },
   { key: 'name', label: 'Ad Soyad', width: 170 },
@@ -25,12 +27,12 @@ const columns = [
 
 export default function Users() {
   useTitle('İstifadəçilər')
-  const { search } = useOutletContext()
+  const { search } = useOutletContext<LayoutOutletContext>()
   const { data: users = [], isLoading: loading } = useQuery({
     queryKey: ['users'],
     queryFn: () => listUsers().then((data) => data.map(mapUserFromApi)),
   })
-  const [selected, setSelected] = useState(null)
+  const [selected, setSelected] = useState<User | null>(null)
 
   const filtered = useMemo(
     () => users.filter((u) => `${u.name} ${u.phone}`.toLowerCase().includes(search.toLowerCase())),

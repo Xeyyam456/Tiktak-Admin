@@ -1,9 +1,18 @@
 import { useEffect, useRef } from 'react'
+import type { ReactNode } from 'react'
 import { X } from 'lucide-react'
 import styles from './Modal.module.css'
 
-export default function Modal({ open, onClose, title, children, wide = false }) {
-  const closeBtnRef = useRef(null)
+interface ModalProps {
+  open: boolean
+  onClose: () => void
+  title?: string
+  children?: ReactNode
+  wide?: boolean
+}
+
+export default function Modal({ open, onClose, title, children, wide = false }: ModalProps) {
+  const closeBtnRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     if (!open) return
@@ -13,7 +22,7 @@ export default function Modal({ open, onClose, title, children, wide = false }) 
   useEffect(() => {
     if (!open) return
 
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }
     document.addEventListener('keydown', handleKeyDown)

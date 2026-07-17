@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import type { FormEvent } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
@@ -8,6 +9,7 @@ import { listCategories } from '@/services/categoryService'
 import { mapProductFromApi, mapProductToApi } from '@/lib/adapters/product'
 import { mapCategoryFromApi } from '@/lib/adapters/category'
 import { PRODUCT_TYPE_LABELS, PRODUCT_TYPE_OPTIONS, productTypeBadgeColor } from '@/lib/constants/productTypes'
+import type { ProductType } from '@/lib/constants/productTypes'
 import Modal from '@/shared/components/Modal/Modal'
 import ConfirmModal from '@/shared/components/ConfirmModal/ConfirmModal'
 import Badge from '@/shared/components/Badge/Badge'
@@ -20,9 +22,11 @@ import Thumbnail from '@/shared/components/Thumbnail/Thumbnail'
 import { usePagination } from '@/shared/hooks/usePagination'
 import { useCrudModal } from '@/shared/hooks/useCrudModal'
 import { useTitle } from '@/shared/hooks/useTitle'
+import type { Column, LayoutOutletContext } from '@/types/common'
+import type { Product, ProductForm, ProductPayload } from '@/types/product'
 import styles from './Products.module.css'
 
-const emptyForm = {
+const emptyForm: ProductForm = {
   image: '📦',
   color: '#f3f4f6',
   imageUrl: '',
@@ -33,7 +37,7 @@ const emptyForm = {
   type: 'piece',
 }
 
-const toForm = (item) => ({
+const toForm = (item: Product): ProductForm => ({
   image: item.image,
   color: item.color,
   imageUrl: item.imageUrl || '',
@@ -44,7 +48,7 @@ const toForm = (item) => ({
   type: item.type,
 })
 
-const columns = [
+const columns: Column[] = [
   { key: 'no', label: 'Sıra', width: 40 },
   { key: 'image', label: 'Şəkil', width: 72 },
   { key: 'name', label: 'Ad', width: 160 },
@@ -58,7 +62,7 @@ const columns = [
 
 export default function Products() {
   useTitle('Məhsullar')
-  const { search } = useOutletContext()
+  const { search } = useOutletContext<LayoutOutletContext>()
   const queryClient = useQueryClient()
 
   const { data: products = [], isLoading: loading } = useQuery({
@@ -82,7 +86,7 @@ export default function Products() {
     },
   })
   const updateMutation = useMutation({
-    mutationFn: ({ id, payload }) => updateProduct(id, payload),
+    mutationFn: ({ id, payload }: { id: number; payload: ProductPayload }) => updateProduct(id, payload),
     onSuccess: async () => {
       await invalidate()
       toast.success('Məhsul yeniləndi')
@@ -117,9 +121,9 @@ export default function Products() {
     setViewTarget,
     openCreate,
     openEdit,
-  } = useCrudModal(emptyForm, toForm)
+  } = useCrudModal<Product, ProductForm>(emptyForm, toForm)
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const payload = mapProductToApi(form)
@@ -135,6 +139,7 @@ export default function Products() {
   }
 
   const confirmDelete = async () => {
+    if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
     } catch {
@@ -233,7 +238,7 @@ export default function Products() {
               Növ
               <select
                 value={form.type}
-                onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
+                onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as ProductType }))}
                 className={styles.select}
               >
                 {PRODUCT_TYPE_OPTIONS.map((t) => (

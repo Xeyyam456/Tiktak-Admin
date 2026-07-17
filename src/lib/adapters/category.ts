@@ -1,8 +1,9 @@
 import { formatDate } from '@/utils/formatDate'
+import type { Category, CategoryApi, CategoryForm, CategoryPayload } from '@/types/category'
 
 const FALLBACK = { image: '🏷️', color: '#f3f4f6' }
 
-export const mapCategoryFromApi = (c) => ({
+export const mapCategoryFromApi = (c: CategoryApi): Category => ({
   id: c.id,
   ...FALLBACK,
   imageUrl: c.img_url || '',
@@ -11,7 +12,7 @@ export const mapCategoryFromApi = (c) => ({
   date: formatDate(c.created_at),
 })
 
-export const mapCategoryToApi = (form) => ({
+export const mapCategoryToApi = (form: CategoryForm): CategoryPayload => ({
   name: form.name,
   description: form.description,
   img_url: form.imageUrl || '',

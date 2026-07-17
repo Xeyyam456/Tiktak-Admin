@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import type { FormEvent } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
@@ -16,11 +17,13 @@ import Thumbnail from '@/shared/components/Thumbnail/Thumbnail'
 import { usePagination } from '@/shared/hooks/usePagination'
 import { useCrudModal } from '@/shared/hooks/useCrudModal'
 import { useTitle } from '@/shared/hooks/useTitle'
+import type { Column, LayoutOutletContext } from '@/types/common'
+import type { Campaign, CampaignForm, CampaignPayload } from '@/types/campaign'
 import styles from './Campaigns.module.css'
 
-const emptyForm = { image: '🖼️', color: '#f3f4f6', imageUrl: '', title: '', description: '' }
+const emptyForm: CampaignForm = { image: '🖼️', color: '#f3f4f6', imageUrl: '', title: '', description: '' }
 
-const toForm = (item) => ({
+const toForm = (item: Campaign): CampaignForm => ({
   image: item.image,
   color: item.color,
   imageUrl: item.imageUrl || '',
@@ -28,7 +31,7 @@ const toForm = (item) => ({
   description: item.description,
 })
 
-const columns = [
+const columns: Column[] = [
   { key: 'no', label: 'Sıra', width: 40 },
   { key: 'image', label: 'Şəkil', width: 72 },
   { key: 'title', label: 'Başlıq', width: 160 },
@@ -39,7 +42,7 @@ const columns = [
 
 export default function Campaigns() {
   useTitle('Kampaniyalar')
-  const { search } = useOutletContext()
+  const { search } = useOutletContext<LayoutOutletContext>()
   const queryClient = useQueryClient()
 
   const { data: campaigns = [], isLoading: loading } = useQuery({
@@ -56,7 +59,7 @@ export default function Campaigns() {
     },
   })
   const updateMutation = useMutation({
-    mutationFn: ({ id, payload }) => updateCampaign(id, payload),
+    mutationFn: ({ id, payload }: { id: number; payload: CampaignPayload }) => updateCampaign(id, payload),
     onSuccess: async () => {
       await invalidate()
       toast.success('Kampaniya yeniləndi')
@@ -91,9 +94,9 @@ export default function Campaigns() {
     setViewTarget,
     openCreate,
     openEdit,
-  } = useCrudModal(emptyForm, toForm)
+  } = useCrudModal<Campaign, CampaignForm>(emptyForm, toForm)
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const payload = mapCampaignToApi(form)
@@ -109,6 +112,7 @@ export default function Campaigns() {
   }
 
   const confirmDelete = async () => {
+    if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
     } catch {

@@ -1,3 +1,5 @@
+import type { BadgeColor } from '@/types/common'
+
 export const PRODUCT_TYPE_LABELS = {
   kg: 'Kiloqram',
   gr: 'Qram',
@@ -9,10 +11,13 @@ export const PRODUCT_TYPE_LABELS = {
   piece: 'Ədəd',
   packet: 'Paket',
   box: 'Qutu',
-}
+} as const
 
-export const PRODUCT_TYPE_OPTIONS = Object.keys(PRODUCT_TYPE_LABELS)
+export type ProductType = keyof typeof PRODUCT_TYPE_LABELS
 
-const WEIGHT_BASED_TYPES = ['kg', 'gr', 'litre', 'ml']
+export const PRODUCT_TYPE_OPTIONS = Object.keys(PRODUCT_TYPE_LABELS) as ProductType[]
 
-export const productTypeBadgeColor = (type) => (WEIGHT_BASED_TYPES.includes(type) ? 'purple' : 'green')
+const WEIGHT_BASED_TYPES: ProductType[] = ['kg', 'gr', 'litre', 'ml']
+
+export const productTypeBadgeColor = (type: ProductType): BadgeColor =>
+  WEIGHT_BASED_TYPES.includes(type) ? 'purple' : 'green'

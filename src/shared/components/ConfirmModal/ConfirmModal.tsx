@@ -3,8 +3,15 @@ import Button from '@/shared/components/Button/Button'
 import deleteImg from '@/assets/images/delete-img.svg'
 import styles from './ConfirmModal.module.css'
 
-export default function ConfirmModal({ open, onCancel, onConfirm, message }) {
-  const cancelBtnRef = useRef(null)
+interface ConfirmModalProps {
+  open: boolean
+  onCancel: () => void
+  onConfirm: () => void
+  message: string
+}
+
+export default function ConfirmModal({ open, onCancel, onConfirm, message }: ConfirmModalProps) {
+  const cancelBtnRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     if (!open) return
@@ -14,7 +21,7 @@ export default function ConfirmModal({ open, onCancel, onConfirm, message }) {
   useEffect(() => {
     if (!open) return
 
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onCancel()
     }
     document.addEventListener('keydown', handleKeyDown)

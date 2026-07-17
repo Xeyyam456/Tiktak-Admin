@@ -1,8 +1,9 @@
 import { formatDate } from '@/utils/formatDate'
+import type { Product, ProductApi, ProductForm, ProductPayload } from '@/types/product'
 
 const FALLBACK = { image: '📦', color: '#f3f4f6' }
 
-export const mapProductFromApi = (p) => ({
+export const mapProductFromApi = (p: ProductApi): Product => ({
   id: p.id,
   ...FALLBACK,
   imageUrl: p.img_url || '',
@@ -15,7 +16,7 @@ export const mapProductFromApi = (p) => ({
   date: formatDate(p.created_at),
 })
 
-export const mapProductToApi = (form) => ({
+export const mapProductToApi = (form: ProductForm): ProductPayload => ({
   title: form.name,
   description: form.description,
   price: String(form.price),

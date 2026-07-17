@@ -1,6 +1,8 @@
-import axios from 'axios'
+import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
 import { getAccessToken, getRefreshToken, saveTokens, clearSession } from '@/lib/auth/session'
 import { useAuthStore } from '@/store/useAuthStore'
+import type { AuthTokens } from '@/types/auth'
+import type { UnwrappedApi } from '@/types/api'
 
 const BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/tiktak`
 
@@ -15,9 +17,13 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-const handleSuccess = (response) => response.data.data ?? response.data
+// Declared to return AxiosResponse only to satisfy axios's interceptor typing —
+// at runtime this unwraps the `{data}` envelope to the raw payload. The real
+// public contract callers see is `UnwrappedApi` (the `as unknown as UnwrappedApi`
+// cast on the default export below), not this function's nominal return type.
+const handleSuccess = (response: AxiosResponse) => (response.data.data ?? response.data) as AxiosResponse
 
-const STATUS_MESSAGES = {
+const STATUS_MESSAGES: Record<number, string> = {
   400: 'Məlumatlar düzgün deyil',
   403: 'Bu əməliyyat üçün icazəniz yoxdur',
   404: 'Tapılmadı',
@@ -28,7 +34,7 @@ const STATUS_MESSAGES = {
 
 // Backend mesajları ingiliscə gəlir — onları göstərmək əvəzinə status koduna
 // görə Azərbaycan dilində sabit mesajlar veririk ki, bütün toastlar eyni dildə olsun
-function getErrorMessage(error, isLogin) {
+function getErrorMessage(error: AxiosError, isLogin?: boolean): string {
   if (!error.response) return 'Serverə qoşulmaq mümkün olmadı'
   if (error.response.status === 401) {
     return isLogin ? 'Telefon və ya parol yanlışdır' : 'Sessiya bitib, yenidən daxil olun'
@@ -43,15 +49,16 @@ function getErrorMessage(error, isLogin) {
   return STATUS_MESSAGES[error.response.status] || 'Xəta baş verdi'
 }
 
-let refreshPromise = null
+let refreshPromise: Promise<AuthTokens> | null = null
 
-function refreshAccessToken() {
+function refreshAccessToken(): Promise<AuthTokens> {
   if (!refreshPromise) {
     refreshPromise = axios
       .post(`${BASE_URL}/auth/refresh`, { refresh_token: getRefreshToken() }, { headers: { 'Accept-Language': 'az' } })
       .then((res) => {
-        saveTokens(res.data.data)
-        return res.data.data
+        const tokens = res.data.data as AuthTokens
+        saveTokens(tokens)
+        return tokens
       })
       .finally(() => {
         refreshPromise = null
@@ -60,8 +67,8 @@ function refreshAccessToken() {
   return refreshPromise
 }
 
-const handleError = async (error) => {
-  const original = error.config
+const handleError = async (error: AxiosError) => {
+  const original = error.config as InternalAxiosRequestConfig
   const isUnauthorized = error.response?.status === 401
   const canRetry = isUnauthorized && !original.skipAuthRetry && !original._retry && getRefreshToken()
 
@@ -84,4 +91,4 @@ const handleError = async (error) => {
 
 api.interceptors.response.use(handleSuccess, handleError)
 
-export default api
+export default api as unknown as UnwrappedApi
