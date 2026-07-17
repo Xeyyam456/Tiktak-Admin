@@ -7,8 +7,11 @@ export default function Modal({ open, onClose, title, children, wide = false }) 
 
   useEffect(() => {
     if (!open) return
-
     closeBtnRef.current?.focus()
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose()

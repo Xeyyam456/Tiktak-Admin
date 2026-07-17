@@ -8,8 +8,11 @@ export default function ConfirmModal({ open, onCancel, onConfirm, message }) {
 
   useEffect(() => {
     if (!open) return
-
     cancelBtnRef.current?.focus()
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onCancel()

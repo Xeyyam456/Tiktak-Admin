@@ -43,10 +43,35 @@ export default function Orders() {
     queryKey: ['orderStats'],
     queryFn: getOrderStats,
   })
-  const stats = { ...emptyStats, ...statsData }
+  // `/orders/admin/stats` doesn't reliably include every OrderStatus counter
+  // (CANCELLED in particular can come back missing, see docs/API.md §8.2) —
+  // `orders` is already the full unpaginated list, so count statuses from it
+  // directly instead of trusting the backend summary for per-status counts.
+  const statusCounts = orders.reduce(
+    (acc, o) => {
+      acc.TOTAL += 1
+      acc[o.status] = (acc[o.status] ?? 0) + 1
+      return acc
+    },
+    { TOTAL: 0 },
+  )
+  const stats = { ...emptyStats, ...statsData, ...statusCounts }
 
   const statusMutation = useMutation({
     mutationFn: ({ id, status }) => updateOrderStatus(id, status),
+    onMutate: async ({ id, status }) => {
+      await queryClient.cancelQueries({ queryKey: ['orders'] })
+      const previousOrders = queryClient.getQueryData(['orders'])
+      queryClient.setQueryData(['orders'], (old) =>
+        old?.map((o) => (o.id === id ? { ...o, status } : o)),
+      )
+      return { previousOrders }
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousOrders) {
+        queryClient.setQueryData(['orders'], context.previousOrders)
+      }
+    },
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['orders'] }),

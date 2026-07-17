@@ -33,6 +33,13 @@ function getErrorMessage(error, isLogin) {
   if (error.response.status === 401) {
     return isLogin ? 'Telefon və ya parol yanlışdır' : 'Sessiya bitib, yenidən daxil olun'
   }
+  // Backend, sifarişlərdə istifadə olunan məhsulun silinməsini 400/422 ilə rədd edir
+  // (foreign key qaydası) — bu halı ümumi "Məlumatlar düzgün deyil" mesajından ayırırıq,
+  // yoxsa admin bunu bug kimi qəbul edir.
+  const isProductDelete = error.config?.method === 'delete' && /\/admin\/products\//.test(error.config?.url ?? '')
+  if (isProductDelete && [400, 422].includes(error.response.status)) {
+    return 'Bu məhsul mövcud sifarişlərdə istifadə olunduğu üçün silinə bilməz'
+  }
   return STATUS_MESSAGES[error.response.status] || 'Xəta baş verdi'
 }
 
