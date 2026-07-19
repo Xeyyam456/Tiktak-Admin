@@ -1,0 +1,5 @@
+export { default as categoriesMock } from '@/RESAD_FILES/mock/kateqoriya'
+export { default as productsMock } from '@/RESAD_FILES/mock/mehsullar'
+export { default as campaignsMock } from '@/RESAD_FILES/mock/kampaniyalar'
+export { default as usersMock } from '@/RESAD_FILES/mock/istifadeciler'
+export { default as ordersMock, orderStats as orderStatsMock } from '@/RESAD_FILES/mock/sifarisler'

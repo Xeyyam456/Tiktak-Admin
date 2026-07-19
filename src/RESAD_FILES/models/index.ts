@@ -1,0 +1,6 @@
+export * from '@/types/Resad TYPESCRIPT_FILES/models/common.model'
+export * from '@/types/Resad TYPESCRIPT_FILES/models/user.model'
+export * from '@/types/Resad TYPESCRIPT_FILES/models/category.model'
+export * from '@/types/Resad TYPESCRIPT_FILES/models/product.model'
+export * from '@/types/Resad TYPESCRIPT_FILES/models/campaign.model'
+export * from '@/types/Resad TYPESCRIPT_FILES/models/order.model'

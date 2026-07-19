@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { ClipboardList, Megaphone, Tags, Package, Users, LogOut } from 'lucide-react'
 import { useAuthStore } from '@/store/useAuthStore'
+import ConfirmModal from '@/shared/components/ConfirmModal/ConfirmModal'
 import { listOrders, getOrderStats } from '@/services/orderService'
 import { listCampaigns } from '@/services/campaignService'
 import { listCategories } from '@/services/categoryService'
@@ -56,6 +58,7 @@ export default function Sidebar() {
   const navigate = useNavigate()
   const logout = useAuthStore((s) => s.logout)
   const queryClient = useQueryClient()
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   return (
     <aside className={styles.aside}>
@@ -72,17 +75,22 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
-      <button
-        type="button"
-        onClick={() => {
-          logout()
-          navigate('/login')
-        }}
-        className={styles.logoutBtn}
-      >
+      <button type="button" onClick={() => setConfirmOpen(true)} className={styles.logoutBtn}>
         <LogOut size={18} />
         Çıxış
       </button>
+
+      <ConfirmModal
+        open={confirmOpen}
+        message="Hesabdan çıxmaq istədiyinizə əminsiniz?"
+        showIcon={false}
+        onConfirm={() => {
+          setConfirmOpen(false)
+          logout()
+          navigate('/login')
+        }}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </aside>
   )
 }

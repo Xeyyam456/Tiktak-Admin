@@ -8,9 +8,16 @@ interface ConfirmModalProps {
   onCancel: () => void
   onConfirm: () => void
   message: string
+  showIcon?: boolean
 }
 
-export default function ConfirmModal({ open, onCancel, onConfirm, message }: ConfirmModalProps) {
+export default function ConfirmModal({
+  open,
+  onCancel,
+  onConfirm,
+  message,
+  showIcon = true,
+}: ConfirmModalProps) {
   const cancelBtnRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -33,7 +40,7 @@ export default function ConfirmModal({ open, onCancel, onConfirm, message }: Con
   return (
     <div className={styles.overlay}>
       <div className={styles.card} role="alertdialog" aria-modal="true" aria-label={message}>
-        <img src={deleteImg} alt="" className={styles.icon} />
+        {showIcon && <img src={deleteImg} alt="" className={styles.icon} />}
         <p className={styles.message}>{message}</p>
         <div className={styles.actions}>
           <Button variant="solid" block onClick={onConfirm}>
