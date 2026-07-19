@@ -20,10 +20,7 @@
 
 .bodyInner {
   margin: 0 auto;
-  display: flex;
-  align-items: stretch;
   max-width: var(--shell-max-width);
-  gap: 24px;
 }
 
 .main {
@@ -34,8 +31,6 @@
   background: var(--color-white);
   padding: 24px;
   box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
 }
 
 /* Outlet always renders a single page-root <div> here. Fixing `.main` to a

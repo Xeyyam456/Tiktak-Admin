@@ -2,7 +2,6 @@
   display: grid;
   grid-template-columns: 1fr;
   height: 100vh;
-  overflow: hidden;
   background: var(--color-white);
 }
 
@@ -13,8 +12,6 @@
 }
 
 .left {
-  display: flex;
-  flex-direction: column;
   min-height: 320px;
 }
 
@@ -39,11 +36,8 @@
 }
 
 .illustrationWrap {
-  display: flex;
   flex: 1;
   min-height: 0;
-  align-items: center;
-  justify-content: center;
   padding: 0 60px 150px;
 }
 
@@ -54,9 +48,6 @@
 }
 
 .right {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
   padding: 40px 24px;
 }
 
@@ -73,40 +64,25 @@
 }
 
 .formWrap {
-  display: flex;
   width: 100%;
   max-width: 380px;
-  flex-direction: column;
-  gap: 24px;
 }
 
 .formTitle {
   border-bottom: 1px solid var(--color-border);
   padding-bottom: 16px;
-  text-align: center;
   font-size: 16px;
   font-weight: 500;
   color: var(--color-text-muted);
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
 .field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   font-size: 14px;
   color: var(--color-text-muted);
 }
 
 .inputWrap {
   position: relative;
-  display: flex;
-  align-items: center;
 }
 
 .input {
@@ -138,12 +114,10 @@
 .trailingIconBtn {
   position: absolute;
   right: 12px;
-  display: flex;
   border: none;
   background: none;
   padding: 4px;
   color: var(--color-text-faint);
-  cursor: pointer;
 }
 
 .trailingIconBtn:hover {
@@ -162,7 +136,6 @@
   padding: 12px;
   font-weight: 500;
   color: var(--color-white);
-  cursor: pointer;
   transition: background 0.15s;
 }
 

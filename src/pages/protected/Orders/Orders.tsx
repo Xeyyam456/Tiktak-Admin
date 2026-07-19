@@ -17,11 +17,22 @@ import Loading from '@/shared/components/Loading/Loading'
 import Thumbnail from '@/shared/components/Thumbnail/Thumbnail'
 import { usePagination } from '@/shared/hooks/usePagination'
 import { useTitle } from '@/shared/hooks/useTitle'
-import type { Column, LayoutOutletContext } from '@/types/common'
+import type { BadgeColor, Column, LayoutOutletContext } from '@/types/common'
 import type { Order, OrderStats } from '@/types/order'
 import styles from './Orders.module.css'
 
 const emptyStats: OrderStats = { TOTAL: 0, DELIVERED: 0, PENDING: 0, PREPARING: 0, CANCELLED: 0, TOTAL_REVENUE: 0 }
+
+// ORDER_STATUS_BADGE_COLOR values are BadgeColor keys (e.g. 'amber'), not real CSS
+// colors — 'amber' isn't a valid CSS color keyword, so it can't be passed straight
+// into a `style={{ color }}`. Map each key to the same CSS var Badge.module.css uses.
+const STATUS_TEXT_COLOR: Record<BadgeColor, string> = {
+  amber: 'var(--color-amber-text)',
+  blue: 'var(--color-blue-text)',
+  green: 'var(--color-green-dark)',
+  red: 'var(--color-red-text)',
+  purple: 'var(--color-purple-text)',
+}
 
 // TOTAL hər zaman var, digər statuslar sifariş siyahısında rast gəlindikcə əlavə olunur —
 // ona görə TOTAL adi `number`, qalanları isə "ola da bilər, olmaya da" mənasında `Partial`.
@@ -108,11 +119,11 @@ export default function Orders() {
 
   return (
     <div>
-      <h2 className={styles.heading}>Sifarişlər</h2>
+      <h2 className={`flex items-center ${styles.heading}`}>Sifarişlər</h2>
 
       {loading && <Loading />}
 
-      <div className={styles.stats}>
+      <div className={`flex flex-wrap gap-3 ${styles.stats}`}>
         <StatCard label="Ümumi sifarişlər" value={stats.TOTAL} icon={ShoppingCart} color="#3b82f6" />
         <StatCard label="Ümumi satış" value={stats.TOTAL_REVENUE} icon={DollarSign} color="#22c55e" />
         <StatCard label="Gözləyən" value={stats.PENDING} icon={Clock} color="#f59e0b" />
@@ -149,22 +160,25 @@ export default function Orders() {
       <Modal open={!!selected} onClose={() => setSelectedId(null)} wide>
         {selected && (
           <div>
-            <div className={styles.detailHeader}>
-              <div className={styles.detailId}>
-                <span className={styles.statusDot}>{selected.status === 'DELIVERED' ? '✓' : '0'}</span>
+            <div className={`flex items-center justify-between flex-wrap gap-3 ${styles.detailHeader}`}>
+              <div className={`flex items-center gap-3 ${styles.detailId}`}>
+                <span className={`flex items-center justify-center ${styles.statusDot}`}>{selected.status === 'DELIVERED' ? '✓' : '0'}</span>
                 <span className={styles.orderCode}>{selected.orderNumber}</span>
               </div>
-              <div className={styles.detailActions}>
+              <div className={`flex items-center gap-4 ${styles.detailActions}`}>
                 <div>
                   <div className={styles.miniLabel}>Status</div>
                   <select
                     value={selected.status}
                     onChange={(e) => updateStatus(selected.id, e.target.value as OrderStatus)}
                     className={styles.statusSelect}
-                    style={{ color: ORDER_STATUS_BADGE_COLOR[selected.status] }} //dinamic color based on status
+                    style={{ color: STATUS_TEXT_COLOR[ORDER_STATUS_BADGE_COLOR[selected.status]] }}
                   >
                     {ORDER_STATUS_OPTIONS.map((s) => (
-                      <option key={s} value={s}>
+                      // options don't inherit the select's dynamic status color — without
+                      // this, every option in the open dropdown list would render in
+                      // whatever color the currently selected status happens to be
+                      <option key={s} value={s} style={{ color: 'var(--color-text)' }}>
                         {ORDER_STATUS_LABELS[s]}
                       </option>
                     ))}
@@ -172,14 +186,14 @@ export default function Orders() {
                 </div>
                 <div>
                   <div className={styles.miniLabel}>Ümumi məbləğ</div>
-                  <div className={styles.amountText}>{selected.subtotal} ₼</div>
+                  <div className={`text-right ${styles.amountText}`}>{selected.subtotal} ₼</div>
                 </div>
               </div>
             </div>
 
             <div className={styles.detailSection}>
               <h4 className={styles.detailSectionTitle}>Sifariş Məlumatları</h4>
-              <dl className={styles.detailGrid}>
+              <dl className={`gap-x-4 gap-y-2 ${styles.detailGrid}`}>
                 <dt>Tarix:</dt>
                 <dd>{selected.date}</dd>
                 <dt>Çatdırılma Ünvanı:</dt>
@@ -194,8 +208,8 @@ export default function Orders() {
             <div className={styles.detailSection}>
               <h4 className={styles.detailSectionTitle}>Məhsullar ({selected.items.length})</h4>
               {selected.items.map((item, idx) => (
-                <div key={idx} className={styles.productRow}>
-                  <div className={styles.productLeft}>
+                <div key={idx} className={`flex items-center justify-between ${styles.productRow}`}>
+                  <div className={`flex items-center gap-3 ${styles.productLeft}`}>
                     <Thumbnail image={item.image} color={item.color} />
                     <div>
                       <div className={styles.productName}>{item.name}</div>
@@ -205,7 +219,7 @@ export default function Orders() {
                     </div>
                   </div>
                   <div>
-                    <div className={styles.productPrice}>{item.price} ₼</div>
+                    <div className={`text-right ${styles.productPrice}`}>{item.price} ₼</div>
                     <div className={styles.productUnit}>{item.unit}</div>
                   </div>
                 </div>

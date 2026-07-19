@@ -42,7 +42,7 @@ export default function Users() {
 
   return (
     <div>
-      <h2 className={styles.heading}>İstifadəçilər</h2>
+      <h2 className={`flex items-center ${styles.heading}`}>İstifadəçilər</h2>
 
       {loading && <Loading />}
 
@@ -51,19 +51,19 @@ export default function Users() {
           <tr key={user.id}>
             <td>{(page - 1) * pageSize + idx + 1}</td>
             <td>
-              <span className={styles.avatar} style={{ backgroundColor: user.color }}>
+              <span className={`flex items-center justify-center ${styles.avatar}`} style={{ backgroundColor: user.color }}>
                 {user.initial}
               </span>
             </td>
             <td className={styles.nameCell}>{user.name}</td>
             <td>
-              <span className={styles.phoneCell}>
+              <span className={`flex items-center gap-1.5 ${styles.phoneCell}`}>
                 <Phone size={13} /> {user.phone}
               </span>
             </td>
             <td className={styles.addressCell}>{user.address}</td>
             <td>
-              <span className={styles.roleBadge}>{user.role}</span>
+              <span className={`inline-flex items-center ${styles.roleBadge}`}>{user.role}</span>
             </td>
             <td>
               <Button variant="ghost" icon={Eye} iconSize={15} onClick={() => setSelected(user)}>
@@ -80,16 +80,16 @@ export default function Users() {
       <Modal open={!!selected} onClose={() => setSelected(null)} title="İstifadəçi məlumatları">
         {selected && (
           <div>
-            <div className={styles.detailTop}>
-              <span className={styles.detailAvatar} style={{ backgroundColor: selected.color }}>
+            <div className={`flex items-center gap-3 ${styles.detailTop}`}>
+              <span className={`flex items-center justify-center ${styles.detailAvatar}`} style={{ backgroundColor: selected.color }}>
                 {selected.initial}
               </span>
               <div>
                 <div className={styles.detailName}>{selected.name}</div>
-                <span className={styles.roleBadge}>{selected.role}</span>
+                <span className={`inline-flex items-center ${styles.roleBadge}`}>{selected.role}</span>
               </div>
             </div>
-            <dl className={styles.detailGrid}>
+            <dl className={`gap-x-4 gap-y-2 ${styles.detailGrid}`}>
               <dt>Telefon:</dt>
               <dd>{selected.phone}</dd>
               <dt>Ünvan:</dt>

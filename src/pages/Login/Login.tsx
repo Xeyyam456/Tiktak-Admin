@@ -35,22 +35,22 @@ export default function Login() {
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.left}>
+    <div className={`overflow-hidden ${styles.page}`}>
+      <div className={`flex flex-col ${styles.left}`}>
         <h1 className={styles.brand}>TIK TAK ADMİN</h1>
-        <div className={styles.illustrationWrap}>
+        <div className={`flex items-center justify-center ${styles.illustrationWrap}`}>
           <img src={loginImg} alt="" className={styles.illustration} />
         </div>
       </div>
 
-      <div className={styles.right}>
-        <div className={styles.formWrap}>
-          <h2 className={styles.formTitle}>Admin Panel</h2>
+      <div className={`flex items-center justify-start ${styles.right}`}>
+        <div className={`flex flex-col gap-6 ${styles.formWrap}`}>
+          <h2 className={`text-center ${styles.formTitle}`}>Admin Panel</h2>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <label className={styles.field}>
+          <form onSubmit={handleSubmit} className={`flex flex-col gap-5 ${styles.form}`}>
+            <label className={`flex flex-col gap-2 ${styles.field}`}>
               Telefon
-              <div className={styles.inputWrap}>
+              <div className={`flex items-center ${styles.inputWrap}`}>
                 <Phone size={16} className={styles.leadingIcon} />
                 <input
                   type="tel"
@@ -62,9 +62,9 @@ export default function Login() {
               </div>
             </label>
 
-            <label className={styles.field}>
+            <label className={`flex flex-col gap-2 ${styles.field}`}>
               Parol
-              <div className={styles.inputWrap}>
+              <div className={`flex items-center ${styles.inputWrap}`}>
                 <Lock size={16} className={styles.leadingIcon} />
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -76,7 +76,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((s) => !s)}
-                  className={styles.trailingIconBtn}
+                  className={`flex cursor-pointer ${styles.trailingIconBtn}`}
                   aria-label={showPassword ? 'Parolu gizlət' : 'Parolu göstər'}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -84,7 +84,7 @@ export default function Login() {
               </div>
             </label>
 
-            <button type="submit" className={styles.submitBtn} disabled={loading}>
+            <button type="submit" className={`cursor-pointer ${styles.submitBtn}`} disabled={loading}>
               {loading ? 'Yoxlanılır...' : 'Daxil ol'}
             </button>
           </form>

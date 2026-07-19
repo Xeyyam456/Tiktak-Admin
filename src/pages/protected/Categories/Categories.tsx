@@ -126,7 +126,7 @@ export default function Categories() {
 
   return (
     <div>
-      <div className={styles.headerRow}>
+      <div className={`flex flex-wrap items-center justify-between gap-3 ${styles.headerRow}`}>
         <h2 className={styles.heading}>Kateqoriyalar</h2>
         <Button icon={Plus} onClick={() => openCreate()}>
           Yeni Kateqoriya
@@ -142,8 +142,8 @@ export default function Categories() {
             <td>
               <Thumbnail imageUrl={item.imageUrl} image={item.image} color={item.color} />
             </td>
-            <td className={styles.nameCell}>{item.name}</td>
-            <td className={styles.descCell}>{item.description}</td>
+            <td className={`truncate ${styles.nameCell}`}>{item.name}</td>
+            <td className={`truncate ${styles.descCell}`}>{item.description}</td>
             <td>{item.date}</td>
             <td>
               <ActionMenu
@@ -160,8 +160,8 @@ export default function Categories() {
       <Pagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} />
 
       <Modal open={formOpen} onClose={() => setFormOpen(false)}>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <label className={styles.field}>
+        <form onSubmit={handleSubmit} className={`flex flex-col gap-4 ${styles.form}`}>
+          <label className={`flex flex-col gap-2 ${styles.field}`}>
             Şəkil ünvanı
             <input
               type="text"
@@ -171,7 +171,7 @@ export default function Categories() {
               className={styles.input}
             />
           </label>
-          <label className={styles.field}>
+          <label className={`flex flex-col gap-2 ${styles.field}`}>
             Ad
             <input
               value={form.name}
@@ -180,14 +180,14 @@ export default function Categories() {
               className={styles.input}
             />
           </label>
-          <label className={styles.field}>
+          <label className={`flex flex-col gap-2 ${styles.field}`}>
             Açıqlama
             <textarea
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               rows={3}
               required
-              className={styles.textarea}
+              className={`resize-none ${styles.textarea}`}
             />
           </label>
           <Button type="submit" fullWidth className={styles.submitBtn} disabled={submitting}>
@@ -206,11 +206,11 @@ export default function Categories() {
       <Modal open={!!viewTarget} onClose={() => setViewTarget(null)} title="Kateqoriya məlumatları" wide>
         {viewTarget && (
           <div>
-            <div className={styles.detailTop}>
+            <div className={`flex items-center gap-3 ${styles.detailTop}`}>
               <Thumbnail imageUrl={viewTarget.imageUrl} image={viewTarget.image} color={viewTarget.color} size="lg" />
               <div className={styles.detailName}>{viewTarget.name}</div>
             </div>
-            <dl className={styles.detailGrid}>
+            <dl className={`gap-x-4 gap-y-2 ${styles.detailGrid}`}>
               <dt>Açıqlama:</dt>
               <dd>{viewTarget.description}</dd>
               <dt>Tarix:</dt>

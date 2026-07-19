@@ -2,9 +2,6 @@
   position: fixed;
   inset: 0;
   z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background: rgba(0, 0, 0, 0.4);
   padding: 16px;
 }
@@ -24,9 +21,6 @@
 
 .header {
   margin-bottom: 16px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
 }
 
 .title {
@@ -39,8 +33,6 @@
   color: var(--color-text-faint);
   background: none;
   border: none;
-  cursor: pointer;
-  display: flex;
   padding: 0;
   transition: color 0.15s;
 }

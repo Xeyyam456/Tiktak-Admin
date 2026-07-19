@@ -27,8 +27,8 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
     if (!this.state.hasError) return this.props.children
 
     return (
-      <div className={styles.page}>
-        <span className={styles.badge}>
+      <div className={`flex flex-col items-center justify-center gap-2.5 text-center ${styles.page}`}>
+        <span className={`flex items-center justify-center ${styles.badge}`}>
           <ServerCrash size={32} />
         </span>
         <h1 className={styles.title}>Nəsə səhv getdi</h1>

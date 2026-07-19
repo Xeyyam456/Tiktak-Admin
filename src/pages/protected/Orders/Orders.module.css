@@ -1,6 +1,4 @@
 .heading {
-  display: flex;
-  align-items: center;
   min-height: var(--page-title-height);
   margin-bottom: 24px;
   font-size: 24px;
@@ -10,9 +8,6 @@
 
 .stats {
   margin-bottom: 24px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
 }
 
 .subtotalNote {
@@ -24,25 +19,11 @@
 
 .detailHeader {
   margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.detailId {
-  display: flex;
-  align-items: center;
-  gap: 12px;
 }
 
 .statusDot {
-  display: flex;
   height: 32px;
   width: 32px;
-  align-items: center;
-  justify-content: center;
   border-radius: 999px;
   background: var(--color-green);
   font-size: 14px;
@@ -55,11 +36,6 @@
   color: var(--color-text-strong);
 }
 
-.detailActions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
 
 .miniLabel {
   font-size: 12px;
@@ -68,14 +44,14 @@
 
 .statusSelect {
   border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid currentColor;
   padding: 4px 8px;
   font-size: 14px;
   color: var(--color-text);
+  outline: none;
 }
 
 .amountText {
-  text-align: right;
   font-weight: 600;
   color: var(--color-red-text);
 }
@@ -96,7 +72,6 @@
 .detailGrid {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 8px 16px;
   font-size: 14px;
   margin: 0;
 }
@@ -113,9 +88,6 @@
 }
 
 .productRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   border-top: 1px solid var(--color-border);
   padding-top: 12px;
 }
@@ -125,11 +97,6 @@
   padding-top: 0;
 }
 
-.productLeft {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
 
 .productName {
   font-size: 14px;
@@ -143,7 +110,6 @@
 }
 
 .productPrice {
-  text-align: right;
   font-size: 14px;
   font-weight: 500;
   color: #16a34a;

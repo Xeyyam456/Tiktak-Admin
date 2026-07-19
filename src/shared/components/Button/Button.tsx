@@ -22,6 +22,7 @@ export default function Button({
   ...rest
 }: ButtonProps) {
   const classes = [
+    'inline-flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap',
     styles.btn,
     styles[variant],
     fullWidth ? styles.fullWidth : '',

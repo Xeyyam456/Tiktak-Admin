@@ -11,9 +11,9 @@ interface StatCardProps {
 
 export default function StatCard({ label, value, icon: Icon, color }: StatCardProps) {
   return (
-    <div className={styles.card}>
+    <div className={`flex flex-col gap-2 ${styles.card}`}>
       <span className={styles.label}>{label}</span>
-      <span className={styles.value}>
+      <span className={`flex items-center gap-1.5 ${styles.value}`}>
         <Icon size={16} color={color} />
         {value}
       </span>

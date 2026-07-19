@@ -8,5 +8,5 @@ interface BadgeProps {
 }
 
 export default function Badge({ color = 'green', children }: BadgeProps) {
-  return <span className={`${styles.badge} ${styles[color]}`}>{children}</span>
+  return <span className={`inline-flex items-center ${styles.badge} ${styles[color]}`}>{children}</span>
 }

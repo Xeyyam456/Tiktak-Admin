@@ -32,11 +32,17 @@ export default function Modal({ open, onClose, title, children, wide = false }: 
   if (!open) return null
 
   return (
-    <div className={styles.overlay}>
+    <div className={`flex items-center justify-center ${styles.overlay}`}>
       <div className={`${styles.card} ${wide ? styles.cardWide : ''}`} role="dialog" aria-modal="true" aria-label={title}>
-        <div className={styles.header}>
+        <div className={`flex items-start justify-between ${styles.header}`}>
           {title ? <h3 className={styles.title}>{title}</h3> : <div />}
-          <button type="button" ref={closeBtnRef} onClick={onClose} className={styles.closeBtn} aria-label="Bağla">
+          <button
+            type="button"
+            ref={closeBtnRef}
+            onClick={onClose}
+            className={`flex cursor-pointer ${styles.closeBtn}`}
+            aria-label="Bağla"
+          >
             <X size={20} />
           </button>
         </div>

@@ -1,11 +1,6 @@
 .headerRow {
   min-height: var(--page-title-height);
   margin-bottom: 24px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
 }
 
 .heading {
@@ -15,26 +10,17 @@
 }
 
 .nameCell {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   font-weight: 500;
   color: var(--color-text);
 }
 
 .descCell {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   color: var(--color-text-muted);
 }
 
 /* Detail modal */
 
 .detailTop {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   margin-bottom: 16px;
 }
 
@@ -47,7 +33,6 @@
 .detailGrid {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 8px 16px;
   border-radius: var(--radius-md);
   background: #f9fafb;
   padding: 16px;
@@ -66,16 +51,7 @@
 
 /* Form modal */
 
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 .field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   font-size: 14px;
   color: var(--color-text-muted);
 }
@@ -92,9 +68,6 @@
   font-family: inherit;
 }
 
-.textarea {
-  resize: none;
-}
 
 .input:focus,
 .textarea:focus {

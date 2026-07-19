@@ -61,21 +61,25 @@ export default function Sidebar() {
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   return (
-    <aside className={styles.aside}>
-      <nav className={styles.nav}>
+    <aside className={`flex flex-col ${styles.aside}`}>
+      <nav className={`flex flex-col gap-1 ${styles.nav}`}>
         {navItems.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
             onMouseEnter={() => PREFETCH[to]?.(queryClient)}
-            className={({ isActive }) => `${styles.link} ${isActive ? styles.linkActive : ''}`}
+            className={({ isActive }) => `flex items-center gap-3 ${styles.link} ${isActive ? styles.linkActive : ''}`}
           >
             <Icon size={18} />
             {label}
           </NavLink>
         ))}
       </nav>
-      <button type="button" onClick={() => setConfirmOpen(true)} className={styles.logoutBtn}>
+      <button
+        type="button"
+        onClick={() => setConfirmOpen(true)}
+        className={`flex items-center gap-3 cursor-pointer text-left ${styles.logoutBtn}`}
+      >
         <LogOut size={18} />
         Çıxış
       </button>

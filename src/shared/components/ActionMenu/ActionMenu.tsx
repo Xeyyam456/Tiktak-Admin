@@ -56,7 +56,7 @@ export default function ActionMenu({ onView, onEdit, onDelete }: ActionMenuProps
       <button
         type="button"
         ref={triggerRef}
-        className={`${styles.trigger} ${open ? styles.triggerActive : ''}`}
+        className={`flex items-center justify-center cursor-pointer ${styles.trigger} ${open ? styles.triggerActive : ''}`}
         onClick={() => (open ? setOpen(false) : openMenu())}
         aria-label="Əməliyyatlar"
       >
@@ -64,14 +64,26 @@ export default function ActionMenu({ onView, onEdit, onDelete }: ActionMenuProps
       </button>
       {open &&
         createPortal(
-          <div ref={menuRef} className={styles.menu} style={{ top: pos.top, left: pos.left }}>
-            <button type="button" className={styles.item} onClick={() => handleSelect(onView)}>
+          <div ref={menuRef} className={`flex flex-col gap-0.5 ${styles.menu}`} style={{ top: pos.top, left: pos.left }}>
+            <button
+              type="button"
+              className={`flex items-center gap-2 cursor-pointer text-left ${styles.item}`}
+              onClick={() => handleSelect(onView)}
+            >
               <Eye size={14} /> Bax
             </button>
-            <button type="button" className={styles.item} onClick={() => handleSelect(onEdit)}>
+            <button
+              type="button"
+              className={`flex items-center gap-2 cursor-pointer text-left ${styles.item}`}
+              onClick={() => handleSelect(onEdit)}
+            >
               <Pencil size={14} /> Düzəlt
             </button>
-            <button type="button" className={`${styles.item} ${styles.danger}`} onClick={() => handleSelect(onDelete)}>
+            <button
+              type="button"
+              className={`flex items-center gap-2 cursor-pointer text-left ${styles.item} ${styles.danger}`}
+              onClick={() => handleSelect(onDelete)}
+            >
               <Trash2 size={14} /> Sil
             </button>
           </div>,

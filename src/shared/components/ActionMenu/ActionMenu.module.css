@@ -1,7 +1,4 @@
 .trigger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 30px;
   height: 30px;
   margin: 0 auto;
@@ -9,7 +6,6 @@
   background: none;
   border-radius: var(--radius-sm);
   color: var(--color-text-muted);
-  cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
 
@@ -28,15 +24,9 @@
   box-shadow: var(--shadow-md);
   border: 1px solid var(--color-border-strong);
   padding: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
 }
 
 .item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   padding: 8px 10px;
   border: none;
   background: none;
@@ -44,8 +34,6 @@
   font-size: 13px;
   font-family: inherit;
   color: var(--color-text);
-  cursor: pointer;
-  text-align: left;
   transition: background 0.15s;
 }
 

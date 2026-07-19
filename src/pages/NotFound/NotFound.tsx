@@ -9,8 +9,8 @@ export default function NotFound() {
   const navigate = useNavigate()
 
   return (
-    <div className={styles.page}>
-      <span className={styles.badge}>
+    <div className={`flex flex-col items-center justify-center gap-2.5 text-center ${styles.page}`}>
+      <span className={`flex items-center justify-center ${styles.badge}`}>
         <Compass size={32} />
       </span>
       <div className={styles.code}>404</div>
@@ -20,3 +20,5 @@ export default function NotFound() {
     </div>
   )
 }
+
+

@@ -38,11 +38,11 @@ export default function ConfirmModal({
   if (!open) return null
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.card} role="alertdialog" aria-modal="true" aria-label={message}>
+    <div className={`flex items-center justify-center ${styles.overlay}`}>
+      <div className={`text-center ${styles.card}`} role="alertdialog" aria-modal="true" aria-label={message}>
         {showIcon && <img src={deleteImg} alt="" className={styles.icon} />}
         <p className={styles.message}>{message}</p>
-        <div className={styles.actions}>
+        <div className={`flex gap-3 ${styles.actions}`}>
           <Button variant="solid" block onClick={onConfirm}>
             Təsdiqlə
           </Button>

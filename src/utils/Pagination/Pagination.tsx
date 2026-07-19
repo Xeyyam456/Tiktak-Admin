@@ -24,16 +24,16 @@ export default function Pagination({ page, pageSize, total, onPageChange, onPage
   }
 
   return (
-    <div className={styles.wrap}>
+    <div className={`flex flex-wrap items-center justify-end gap-4 ${styles.wrap}`}>
       <span>
         {start}-{end} / {total} nəticə
       </span>
-      <div className={styles.pages}>
+      <div className={`flex items-center gap-1 ${styles.pages}`}>
         <button
           type="button"
           disabled={page <= 1}
           onClick={() => onPageChange(page - 1)}
-          className={styles.navBtn}
+          className={`flex items-center justify-center cursor-pointer ${styles.navBtn}`}
         >
           <ChevronLeft size={16} />
         </button>
@@ -47,7 +47,7 @@ export default function Pagination({ page, pageSize, total, onPageChange, onPage
               key={p}
               type="button"
               onClick={() => onPageChange(p)}
-              className={`${styles.pageBtn} ${p === page ? styles.pageBtnActive : ''}`}
+              className={`flex items-center justify-center cursor-pointer ${styles.pageBtn} ${p === page ? styles.pageBtnActive : ''}`}
             >
               {p}
             </button>
@@ -57,7 +57,7 @@ export default function Pagination({ page, pageSize, total, onPageChange, onPage
           type="button"
           disabled={page >= totalPages}
           onClick={() => onPageChange(page + 1)}
-          className={styles.navBtn}
+          className={`flex items-center justify-center cursor-pointer ${styles.navBtn}`}
         >
           <ChevronRight size={16} />
         </button>

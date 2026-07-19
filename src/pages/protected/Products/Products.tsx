@@ -153,7 +153,7 @@ export default function Products() {
 
   return (
     <div>
-      <div className={styles.headerRow}>
+      <div className={`flex flex-wrap items-center justify-between gap-3 ${styles.headerRow}`}>
         <h2 className={styles.heading}>Məhsullar</h2>
         <Button icon={Plus} onClick={() => openCreate({ category_id: categoryOptions[0]?.id ?? '' })}>
           Yeni Məhsul
@@ -169,10 +169,10 @@ export default function Products() {
             <td>
               <Thumbnail imageUrl={item.imageUrl} image={item.image} color={item.color} />
             </td>
-            <td className={styles.nameCell}>{item.name}</td>
-            <td className={styles.descCell}>{item.description}</td>
-            <td className={styles.priceCell}>{item.price} ₼</td>
-            <td className={styles.categoryCell}>{item.category?.name ?? ''}</td>
+            <td className={`truncate ${styles.nameCell}`}>{item.name}</td>
+            <td className={`truncate ${styles.descCell}`}>{item.description}</td>
+            <td className={`whitespace-nowrap ${styles.priceCell}`}>{item.price} ₼</td>
+            <td className={`truncate ${styles.categoryCell}`}>{item.category?.name ?? ''}</td>
             <td>
               <Badge color={productTypeBadgeColor(item.type)}>{PRODUCT_TYPE_LABELS[item.type] ?? item.type}</Badge>
             </td>
@@ -192,8 +192,8 @@ export default function Products() {
       <Pagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} />
 
       <Modal open={formOpen} onClose={() => setFormOpen(false)} wide>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <label className={styles.field}>
+        <form onSubmit={handleSubmit} className={`flex flex-col gap-4 ${styles.form}`}>
+          <label className={`flex flex-col gap-2 ${styles.field}`}>
             Şəkil ünvanı
             <input
               type="text"
@@ -203,7 +203,7 @@ export default function Products() {
               className={styles.input}
             />
           </label>
-          <label className={styles.field}>
+          <label className={`flex flex-col gap-2 ${styles.field}`}>
             Ad
             <input
               value={form.name}
@@ -212,18 +212,18 @@ export default function Products() {
               className={styles.input}
             />
           </label>
-          <label className={styles.field}>
+          <label className={`flex flex-col gap-2 ${styles.field}`}>
             Açıqlama
             <textarea
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               rows={2}
               required
-              className={styles.textarea}
+              className={`resize-none ${styles.textarea}`}
             />
           </label>
-          <div className={styles.row}>
-            <label className={styles.field}>
+          <div className={`gap-4 ${styles.row}`}>
+            <label className={`flex flex-col gap-2 ${styles.field}`}>
               Qiymət
               <input
                 type="number"
@@ -234,7 +234,7 @@ export default function Products() {
                 className={styles.input}
               />
             </label>
-            <label className={styles.field}>
+            <label className={`flex flex-col gap-2 ${styles.field}`}>
               Növ
               <select
                 value={form.type}
@@ -249,7 +249,7 @@ export default function Products() {
               </select>
             </label>
           </div>
-          <label className={styles.field}>
+          <label className={`flex flex-col gap-2 ${styles.field}`}>
             Kateqoriya
             <select
               value={form.category_id}
@@ -280,7 +280,7 @@ export default function Products() {
       <Modal open={!!viewTarget} onClose={() => setViewTarget(null)} title="Məhsul məlumatları" wide>
         {viewTarget && (
           <div>
-            <div className={styles.detailTop}>
+            <div className={`flex items-center gap-3 ${styles.detailTop}`}>
               <Thumbnail imageUrl={viewTarget.imageUrl} image={viewTarget.image} color={viewTarget.color} size="lg" />
               <div>
                 <div className={styles.detailName}>{viewTarget.name}</div>
@@ -289,7 +289,7 @@ export default function Products() {
                 </Badge>
               </div>
             </div>
-            <dl className={styles.detailGrid}>
+            <dl className={`gap-x-4 gap-y-2 ${styles.detailGrid}`}>
               <dt>Açıqlama:</dt>
               <dd>{viewTarget.description}</dd>
               <dt>Qiymət:</dt>

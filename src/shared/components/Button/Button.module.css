@@ -1,17 +1,11 @@
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   padding: 9px 16px;
   font-size: 14px;
   font-weight: 500;
   font-family: inherit;
-  cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
-  white-space: nowrap;
 }
 
 .solid {

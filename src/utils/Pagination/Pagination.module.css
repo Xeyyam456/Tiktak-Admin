@@ -1,31 +1,16 @@
 .wrap {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 16px;
   padding: 16px 4px;
   font-size: 13px;
   color: var(--color-text-muted);
 }
 
-.pages {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
 .navBtn {
-  display: flex;
   height: 28px;
   width: 28px;
-  align-items: center;
-  justify-content: center;
   border-radius: var(--radius-sm);
   color: var(--color-text-faint);
   background: none;
   border: none;
-  cursor: pointer;
   transition: background 0.15s;
 }
 
@@ -39,18 +24,14 @@
 }
 
 .pageBtn {
-  display: flex;
   height: 28px;
   width: 28px;
-  align-items: center;
-  justify-content: center;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   font-size: 12px;
   font-weight: 500;
   color: var(--color-text-muted);
   background: none;
-  cursor: pointer;
   transition: background 0.15s;
 }
 

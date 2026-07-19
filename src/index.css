@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* Azerbaijani only needs latin + latin-ext (ə/ğ/ı/ö/ş/ü/ç) — not the full
    cyrillic/greek/vietnamese/symbols/math subsets fontsource ships by default */
 @import "@fontsource/roboto/latin-300.css";
